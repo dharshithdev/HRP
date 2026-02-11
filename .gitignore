@@ -1,0 +1,14 @@
+# Ignore dependencies
+client/node_modules/
+server/node_modules/
+
+# Ignore environment variables
+Server/.env
+Client/.env
+
+# Ignore build folders
+Client/dist/
+Client/build/
+
+# System files
+.DS_Store
