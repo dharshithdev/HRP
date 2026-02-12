@@ -7,21 +7,18 @@ const { ViewDoctors, ToggleUserActiveStatus, ViewStaff, DeleteStaff, DeleteDocto
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
 
-//router.use(protect);
-//router.use(authorize(['Admin']));
-
 
 router.post('/register', Register);
-router.patch('/toggle-status/:userId', ToggleUserActiveStatus);
+router.patch('/toggle-status/:userId', protect, authorize(['Admin']), ToggleUserActiveStatus);
 
 
 router.get('/doctors', ViewDoctors);
-router.delete('/doctor/:doctorId/:userId', DeleteDoctor);
+router.delete('/doctor/:doctorId/:userId', protect, authorize(['Admin']), DeleteDoctor);
 
 
 router.get('/staff', ViewStaff);
-router.delete('/staff/:staffId/:userId', DeleteStaff);
+router.delete('/staff/:staffId/:userId', protect, authorize(['Admin']), DeleteStaff);
 
-router.get('/patients', ViewPatients);
+router.get('/patients', authorize(['Admin']), protect, ViewPatients);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const Patient = require('../Models/Patient');
 
 const GetMySchedule = async (req, res) => {
     try {
-        const { doctorId } = req.user; 
+        const { doctorId } = req.user;
 
         const schedule = await Appointment.find({ doctorId })
             .populate('patientId', 'name age gender bloodGroup') 

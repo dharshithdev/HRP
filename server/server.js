@@ -7,6 +7,7 @@ const AdminRoutes = require("./Routes/adminRoutes");
 const AuthRoutes = require("./Routes/authRoutes");
 const StaffRoutes = require("./Routes/staffRoutes");
 const DoctorRoutes = require("./Routes/doctorRoutes");
+const appointmentRoutes = require('./Routes/appointmentRoutes');
 
 const app = express();
  
@@ -19,6 +20,7 @@ app.use("/api/auth", AuthRoutes);
 app.use("/api/admin", AdminRoutes);
 app.use("/api/doctor", DoctorRoutes);
 app.use("/api/staff", StaffRoutes); 
+app.use('/api/appointments', appointmentRoutes);
 
 app.use((err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;

@@ -38,7 +38,7 @@ const Register = async (req, res) => {
         console.log(error.message)
         res.status(500).json({ error: err.message });
     }
-};
+}; 
 
 const Login = async (req, res) => {
     try {
