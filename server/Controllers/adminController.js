@@ -1,7 +1,7 @@
-const User = require('../Model/User');
-const Doctor = require('../Model/Doctor');
-const Staff = require('../Model/Staff');
-const Patient = require('../Model/Patient');
+const User = require('../Models/User');
+const Doctor = require('../Models/Doctor');
+const Staff = require('../Models/Staff');
+const Patient = require('../Models/Patient');
 
 // --- DOCTOR MANAGEMENT ---
 

@@ -18,7 +18,7 @@ app.use(express.json());
 app.use("/api/auth", AuthRoutes);
 app.use("/api/admin", AdminRoutes);
 app.use("/api/doctor", DoctorRoutes);
-app.use("/api/staff", StaffRoutes); // Changed to lowercase 's'
+app.use("/api/staff", StaffRoutes); 
 
 app.use((err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
