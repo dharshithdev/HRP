@@ -9,15 +9,20 @@ const Register = async (req, res) => {
     try {
         const { email, password, role, name, ...profileData } = req.body;
 
+        // 1. Check if user exists
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ message: "User already exists" });
 
+        // 2. Hash Password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // 3. Create User Account
         user = new User({ email, password: hashedPassword, role });
         await user.save();
 
+        // 4. Create Role-Specific Profile
+        // This links the Auth data to the Personnel data
         if (role === 'Doctor') {
             await Doctor.create({ userId: user._id, name, ...profileData });
         } else if (role === 'Staff') {
@@ -26,28 +31,17 @@ const Register = async (req, res) => {
             await Admin.create({ userId: user._id, name, ...profileData });
         }
         
-    const token = jwt.sign(
-        { id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    
-    res.status(201).json({ 
-        message: "User and Profile created successfully",
-        token, 
-        user: { id: user._id, email: user.email, role: user.role }
-    });
-            res.status(201).json({ message: "User and Profile created successfully" });
+        // Return success without logging the admin out
+        res.status(201).json({ 
+            message: `${role} account for ${name} created successfully.` 
+        });
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-const User = require('../Model/User');
-const Doctor = require('../Model/Doctor');
-const Staff = require('../Model/Staff');
-const Admin = require('../Model/Admin');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
-exports.login = async (req, res) => {
+const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -92,4 +86,4 @@ exports.login = async (req, res) => {
     }
 };
 
-module.exports = {Register};
+module.exports = {Register, Login};

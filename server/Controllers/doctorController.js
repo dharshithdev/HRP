@@ -54,7 +54,6 @@ const GetPatientMedicalRecords = async (req, res) => {
     }
 };
 
-// Add this to your doctorController.js
 
 const UpdatePatientMedicalHistory = async (req, res) => {
     try {
