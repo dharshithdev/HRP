@@ -7,8 +7,8 @@ const { ViewDoctors, ToggleUserActiveStatus, ViewStaff, DeleteStaff, DeleteDocto
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
 
-router.use(protect);
-router.use(authorize(['Admin']));
+//router.use(protect);
+//router.use(authorize(['Admin']));
 
 
 router.post('/register', Register);

@@ -87,4 +87,4 @@ const DeletePatient = async (req, res) => {
 };
 
 module.exports = { ViewDoctors, ToggleUserActiveStatus, ViewStaff, DeleteStaff, ViewPatients, 
-     DeleteDoctor };
+    DeletePatient };

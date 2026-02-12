@@ -1,10 +1,8 @@
 const Appointment = require('../Models/Appointment');
 const Patient = require('../Models/Patient');
 
-
 const GetMySchedule = async (req, res) => {
     try {
-
         const { doctorId } = req.user; 
 
         const schedule = await Appointment.find({ doctorId })

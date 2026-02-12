@@ -5,7 +5,7 @@ const Admin = require('../Models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const Register = async (req, res) => {
+const Register = async (req, res) => { 
     try {
         const { email, password, role, name, ...profileData } = req.body;
 
@@ -21,8 +21,6 @@ const Register = async (req, res) => {
         user = new User({ email, password: hashedPassword, role });
         await user.save();
 
-        // 4. Create Role-Specific Profile
-        // This links the Auth data to the Personnel data
         if (role === 'Doctor') {
             await Doctor.create({ userId: user._id, name, ...profileData });
         } else if (role === 'Staff') {
@@ -37,6 +35,7 @@ const Register = async (req, res) => {
         });
 
     } catch (err) {
+        console.log(error.message)
         res.status(500).json({ error: err.message });
     }
 };

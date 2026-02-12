@@ -9,7 +9,7 @@ const StaffRoutes = require("./Routes/staffRoutes");
 const DoctorRoutes = require("./Routes/doctorRoutes");
 
 const app = express();
-
+ 
 // Middleware
 app.use(cors());
 app.use(express.json());

@@ -9,7 +9,7 @@ const patientSchema = new mongoose.Schema({
     bloodGroup: String,
     contact: { type: String, required: true },
     state: { type: Boolean, required: true, default: 0 }
-}, { timestamps: true });
+}, { timestamps: true }); 
 
 patientSchema.index({ name: 1, contact: 1 });
 

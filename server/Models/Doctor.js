@@ -9,6 +9,6 @@ const doctorSchema = new mongoose.Schema({
         slots: [String] 
     }],
     phone: String
-});
+}); 
 
 module.exports = mongoose.model('Doctor', doctorSchema);

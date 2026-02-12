@@ -8,7 +8,6 @@ const appointmentSchema = new mongoose.Schema({
     status: { type: String, enum: ['Pending', 'Confirmed', 'Completed', "Cancelled"], default: 'Confirmed' }
 });
 
-// THE CONCURRENCY FIX: A doctor cannot have two appointments at the same date and time.
 appointmentSchema.index({ doctorId: 1, appointmentDate: 1, timeSlot: 1 }, { unique: true });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

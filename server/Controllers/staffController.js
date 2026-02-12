@@ -9,6 +9,50 @@ const RegisterPatient = async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
+}; 
+
+const BookAppointment = async (req, res) => {
+    try {
+        const { patientId, doctorId, appointmentDate, timeSlot } = req.body;
+
+        const patientExists = await Patient.findById(patientId);
+        const doctorExists = await Doctor.findById(doctorId);
+
+        if (!patientExists || !doctorExists) {
+            return res.status(404).json({ message: "Patient or Doctor not found" });
+        }
+
+        const existingAppointment = await Appointment.findOne({
+            doctorId,
+            appointmentDate,
+            timeSlot,
+            status: { $ne: 'Cancelled' } 
+        });
+
+        if (existingAppointment) {
+            return res.status(400).json({ 
+                message: "This time slot is already booked for this doctor." 
+            });
+        }
+
+        const newAppointment = new Appointment({
+            patientId,
+            doctorId,
+            appointmentDate,
+            timeSlot,
+            status: 'Confirmed'
+        });
+
+        await newAppointment.save();
+
+        res.status(201).json({
+            message: "Appointment booked successfully",
+            appointment: newAppointment
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };
 
 const SearchPatients = async (req, res) => {
@@ -77,4 +121,4 @@ const DeletePatient = async (req, res) => {
     }
 };
 
-module.exports = { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient };
+module.exports = { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient, BookAppointment };
