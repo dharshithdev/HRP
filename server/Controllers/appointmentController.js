@@ -26,13 +26,21 @@ const BookAppointment = async (req, res) => {
 };
 
 const CancelAppointment = async (req, res) => {
-    const {id} = req.params;
-    if(!id) return res.status(404).json({message: "Invalid Id"});
+    try {
+        const { id } = req.params;
+        
+        const appointment = await Appointment.findById(id);
+        if (!appointment) return res.status(404).json({ message: "Appointment not found" });
 
-    const status = "Cancelled";
-    const cancelledAppointment = await Appointment.findByIdAndUpdate(id, status, {new: true});
+        await Appointment.findByIdAndDelete(id);
 
-    return res.status(200).json({message: "Cancelled Successfully", cancelledAppointment});
+        return res.status(200).json({ 
+            message: "Appointment cancelled and slot is now available." 
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
 module.exports = {BookAppointment, CancelAppointment};

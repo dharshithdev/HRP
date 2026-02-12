@@ -1,4 +1,4 @@
-const Patient = require('../Models/Patient');
+const Patient = require('../Models/Patient'); // Ensure lowercase if folder is lowercase
 const Appointment = require('../Models/Appointment');
 
 const RegisterPatient = async (req, res) => {
@@ -20,7 +20,6 @@ const SearchPatients = async (req, res) => {
                 { contact: query }
             ]
         }).limit(10); 
-        
         res.json(patients);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -30,15 +29,12 @@ const SearchPatients = async (req, res) => {
 const DischargePatient = async (req, res) => {
     try {
         const { id } = req.params;
-        
         const patient = await Patient.findByIdAndUpdate(
             id, 
             { state: 1 }, 
             { new: true }
         );
-
         if (!patient) return res.status(404).json({ message: "Patient not found" });
-
         res.json({ message: "Patient discharged successfully", patient });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -62,17 +58,23 @@ const GetPatientHistory = async (req, res) => {
 
 const DeletePatient = async (req, res) => {
     try {
-        const {id} = req.params;
-        if(!id) return res.status(201).json({message: "Invalid Patient ID"});
+        const { id } = req.params;
+        if (!id) return res.status(400).json({ message: "Invalid Patient ID" });
 
         const deletedPatient = await Patient.findByIdAndDelete(id);
-        if(deletedPatient) {
-            return res.state(200).json({message: "PatientSuccessfully deleted"});
-        } 
-    } catch(error) {
-        console.log("Error deleting Patient ", error.message);
-        return res.status(500).json({message: "Internl Server error"});
-    }
-}
+        
+        if (!deletedPatient) {
+            return res.status(404).json({ message: "Patient not found" });
+        }
 
-module.exports = {RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient};
+        // PRO LOGIC: Delete all appointments associated with this patient
+        await Appointment.deleteMany({ patientId: id });
+
+        return res.status(200).json({ message: "Patient and associated records successfully deleted" });
+    } catch (error) {
+        console.error("Error deleting Patient: ", error.message);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+module.exports = { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient };
