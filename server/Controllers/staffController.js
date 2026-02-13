@@ -1,6 +1,7 @@
 const Patient = require('../Models/Patient'); // Ensure lowercase if folder is lowercase
 const Appointment = require('../Models/Appointment');
 const Doctor = require('../Models/Doctor');
+const Alert = require('../Models/Alert');
 
 const RegisterPatient = async (req, res) => {
     try {
@@ -77,21 +78,6 @@ const SearchPatients = async (req, res) => {
     }
 };
 
-const DischargePatient = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const patient = await Patient.findByIdAndUpdate(
-            id, 
-            { state: 1 }, 
-            { new: true }
-        );
-        if (!patient) return res.status(404).json({ message: "Patient not found" });
-        res.json({ message: "Patient discharged successfully", patient });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
 const GetPatientHistory = async (req, res) => {
     try {
         const patient = await Patient.findById(req.params.id);
@@ -157,7 +143,6 @@ const GetStaffDashboardStats = async (req, res) => {
 
 const GetAllDoctors = async (req, res) => {
     try {
-        // .populate allows us to get the 'email' and 'isActive' status from the User model
         const doctors = await Doctor.find()
             .populate('userId', 'email isActive')
             .sort({ name: 1 }); // Alphabetical order
@@ -169,5 +154,85 @@ const GetAllDoctors = async (req, res) => {
     }
 };
 
-module.exports = { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient,
-     BookAppointment, GetStaffDashboardStats, GetAllDoctors };
+const GetAvailableSlots = async (req, res) => {
+    try {
+        const { doctorId, date } = req.query; // date should be YYYY-MM-DD
+        
+        const doctor = await Doctor.findById(doctorId);
+        if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+
+        // 1. Get the day of the week from the requested date
+        const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(date));
+
+        // 2. Find the doctor's defined schedule for that day
+        const daySchedule = doctor.availability.find(a => a.day === dayName);
+        
+        if (!daySchedule) {
+            return res.json({ slots: [], message: "Doctor does not work on this day" });
+        }
+
+        // 3. Find existing appointments for this doctor on this day
+        const bookedAppointments = await Appointment.find({
+            doctorId,
+            appointmentDate: new Date(date),
+            status: { $ne: 'Cancelled' }
+        }).select('timeSlot');
+
+        const bookedSlots = bookedAppointments.map(app => app.timeSlot);
+
+        // 4. Filter out booked slots from the doctor's total availability
+        const availableSlots = daySchedule.slots.filter(slot => !bookedSlots.includes(slot));
+
+        res.json({ availableSlots });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const CreateAlert = async (req, res) => {
+    try {
+        const { notice } = req.body;
+
+        if (!notice || notice.trim() === "") {
+            return res.status(400).json({ message: "Notice content cannot be empty" });
+        }
+
+        const newAlert = new Alert({ notice });
+        await newAlert.save();
+
+        res.status(201).json({ message: "Alert broadcasted successfully", alert: newAlert });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const GetAllAppointments = async (req, res) => {
+    try {
+        const appointments = await Appointment.find()
+            .populate('patientId', 'name contact bloodGroup') // Get specific patient fields
+            .populate('doctorId', 'name specialization')     // Get specific doctor fields
+            .sort({ appointmentDate: -1, timeSlot: 1 });     // Sort by date (newest first)
+
+        res.status(200).json(appointments);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch appointments: " + err.message });
+    }
+};
+
+const UpdateStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const updated = await Appointment.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        );
+        res.status(200).json(updated);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+module.exports = { RegisterPatient, SearchPatients, GetPatientHistory, DeletePatient,
+     BookAppointment, GetStaffDashboardStats, GetAllDoctors, GetAvailableSlots, CreateAlert,
+     GetAllAppointments, UpdateStatus };

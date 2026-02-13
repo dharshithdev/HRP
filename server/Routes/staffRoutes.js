@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient,
-     BookAppointment, GetStaffDashboardStats,GetAllDoctors } = require('../controllers/staffController');
+const { RegisterPatient, SearchPatients, GetPatientHistory, DeletePatient,
+     BookAppointment, GetStaffDashboardStats, GetAllDoctors, GetAvailableSlots, CreateAlert,
+     GetAllAppointments, UpdateStatus } = require('../controllers/staffController');
 
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
@@ -10,8 +11,6 @@ const {authorize} = require('../Middlewares/Role');
 router.use(protect); 
 
 router.post('/register', authorize(['Staff']), RegisterPatient);
-
-router.post('fix-appointment', BookAppointment); 
 
 router.get('/patients/search', protect, authorize(['Staff']), SearchPatients);
 
@@ -22,9 +21,15 @@ router.get('/patients/history/:id', protect, authorize(['Staff']), GetPatientHis
 
 router.get('/doctor-records', protect, authorize(['Staff']), GetAllDoctors);
 
-router.patch('/discharge/:id', authorize(['Staff']), DischargePatient);
+router.get('/appointments/available-slots', protect, authorize(['Staff']), GetAvailableSlots);
 
+router.post('/appointments/book', protect, authorize(['Staff']), BookAppointment);
+
+router.post('/alerts', protect, authorize(['Staff']), CreateAlert);
 
 router.delete('/delete/:id', authorize(['Admin']), DeletePatient);
+
+router.get('/appointments', protect, authorize(['Staff']), GetAllAppointments);
+router.patch('/appointments/:id', protect, authorize(['Staff']), UpdateStatus);
 
 module.exports = router;

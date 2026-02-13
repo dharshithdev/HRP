@@ -96,12 +96,12 @@ const StaffDashboard = () => {
                 sub="Create profile" 
               />
               <ActionButton 
-                onClick={() => navigate('/staff/patients')} 
-                label="Check-in Patient" 
+                onClick={() => navigate('/staff/new-appointment')} 
+                label="New Appointment" 
                 sub="Mark arrival" 
               />
               <ActionButton 
-                onClick={() => console.log("Emergency protocol initiated")} 
+                onClick={() => navigate('/staff/alert')} 
                 label="Emergency Alert" 
                 sub="Notify ER" 
                 color="bg-red-500/20 text-red-400" 
