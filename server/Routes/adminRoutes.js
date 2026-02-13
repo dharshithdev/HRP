@@ -3,7 +3,7 @@ const router = express.Router();
 const {Register} = require('../Controllers/authController');
 const { ViewDoctors, ToggleUserActiveStatus, ViewStaff, DeleteStaff, DeleteDoctor, ViewPatients 
     } = require('../Controllers/adminController');
-
+ 
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
 

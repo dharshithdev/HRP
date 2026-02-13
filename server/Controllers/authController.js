@@ -5,7 +5,7 @@ const Admin = require('../Models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const Register = async (req, res) => { 
+const Register = async (req, res) => {  
     try {
         const { email, password, role, name, ...profileData } = req.body;
 

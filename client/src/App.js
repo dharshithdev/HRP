@@ -7,6 +7,9 @@ import DoctorDashboard from './Pages/Doctor/DoctorDashboard'; // New Import
 import ProtectedRoute from './Components/ProtectRoute';
 import Appointments from './Pages/Doctor/Appointments';
 import Settings from './Pages/Doctor/Settings';
+import StaffDashboard from './Pages/Staffs/Dashboard';
+import PatientRecords from './Pages/Staffs/PatientRecord';
+import DoctorRecords from './Pages/Staffs/Doctors';
 
 const RootRedirect = () => {
   const { user, loading } = useContext(AuthContext);
@@ -67,7 +70,19 @@ function App() {
           {/* Staff Protected Routes (Placeholder element for now) */}
           <Route path="/staff/dashboard" element={
             <ProtectedRoute allowedRoles={['Staff']}>
-              <div className="text-white">Staff Dashboard Coming Soon...</div>
+              <StaffDashboard />
+            </ProtectedRoute>
+          } />
+
+            <Route path="/staff/patient-records" element={
+            <ProtectedRoute allowedRoles={['Staff']}>
+              <PatientRecords />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/staff/doctor-records" element={
+            <ProtectedRoute allowedRoles={['Staff']}>
+              <DoctorRecords />
             </ProtectedRoute>
           } />
 

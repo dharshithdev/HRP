@@ -1,5 +1,6 @@
 const Patient = require('../Models/Patient'); // Ensure lowercase if folder is lowercase
 const Appointment = require('../Models/Appointment');
+const Doctor = require('../Models/Doctor');
 
 const RegisterPatient = async (req, res) => {
     try {
@@ -28,7 +29,7 @@ const BookAppointment = async (req, res) => {
             timeSlot,
             status: { $ne: 'Cancelled' } 
         });
-
+ 
         if (existingAppointment) {
             return res.status(400).json({ 
                 message: "This time slot is already booked for this doctor." 
@@ -57,13 +58,19 @@ const BookAppointment = async (req, res) => {
 
 const SearchPatients = async (req, res) => {
     try {
-        const { query } = req.query; 
-        const patients = await Patient.find({
-            $or: [
-                { name: new RegExp(query, 'i') },
-                { contact: query }
-            ]
-        }).limit(10); 
+        const { query } = req.query;
+        let patients;
+
+        if (!query) {
+            patients = await Patient.find().sort({ createdAt: -1 });
+        } else {
+            patients = await Patient.find({
+                $or: [
+                    { name: new RegExp(query, 'i') },
+                    { contact: new RegExp(query, 'i') } // regex for partial contact matches
+                ]
+            });
+        }
         res.json(patients);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -121,4 +128,31 @@ const DeletePatient = async (req, res) => {
     }
 };
 
-module.exports = { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient, BookAppointment };
+// controllers/staffController.js
+const GetStaffDashboardStats = async (req, res) => {
+    try {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const currentDay = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
+
+        const [todayPatients, totalAppointments, totalDoctors, availableDoctorsCount] = await Promise.all([
+            Patient.countDocuments({ createdAt: { $gte: todayStart } }),
+            Appointment.countDocuments(),
+            Doctor.countDocuments(),
+            // Query doctors where the availability array contains an object with the current day
+            Doctor.countDocuments({ "availability.day": currentDay })
+        ]);
+
+        res.status(200).json({ 
+            todayPatients, 
+            totalAppointments, 
+            availableDoctors: `${availableDoctorsCount}/${totalDoctors}` 
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
+module.exports = { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient,
+     BookAppointment, GetStaffDashboardStats };

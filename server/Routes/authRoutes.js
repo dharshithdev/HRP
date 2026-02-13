@@ -4,4 +4,4 @@ const { Login } = require('../Controllers/authController');
 
 router.post('/login', Login);
 
-module.exports = router;  
+module.exports = router;   
