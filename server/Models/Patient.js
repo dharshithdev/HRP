@@ -5,7 +5,7 @@ const patientSchema = new mongoose.Schema({
     age: Number,
     gender: { type: String, enum: ['Male', 'Female', 'Other'] },
     medicalHistory: [String], 
-    allergies: [String], 
+    allergies: [String],  
     bloodGroup: String,
     contact: { type: String, required: true },
     state: { type: Boolean, required: true, default: 0 }

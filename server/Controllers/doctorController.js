@@ -1,8 +1,10 @@
 const Appointment = require('../Models/Appointment');
 const Patient = require('../Models/Patient');
+const Record = require("../Models/Record");
+const Doctor = require("../Models/Doctor");
 
 const GetMySchedule = async (req, res) => {
-    try {
+    try { 
         const { doctorId } = req.user;
 
         const schedule = await Appointment.find({ doctorId })
@@ -15,24 +17,41 @@ const GetMySchedule = async (req, res) => {
     }
 };
 
+// This runs on the SERVER
 const UpdateAppointmentStatus = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { status } = req.body; 
+        const { id } = req.params; // This is the Appointment ID
+        const { status } = req.body; // This will be 1 or 0 (Boolean)
 
-        const appointment = await Appointment.findByIdAndUpdate(
-            id,
-            { status },
-            { new: true, runValidators: true }
+        // 1. Find the appointment to get the associated Patient ID
+        const appointment = await Appointment.findById(id);
+        
+        if (!appointment) {
+            return res.status(404).json({ message: "Appointment not found" });
+        }
+
+        // 2. Update the Patient's 'state' field
+        const updatedPatient = await Patient.findByIdAndUpdate(
+            appointment.patientId,
+            { state: status }, // status is 1 or 0
+            { returnDocument: 'after', runValidators: true }
         );
 
-        if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+        if (!updatedPatient) {
+            return res.status(404).json({ message: "Patient not found" });
+        }
 
-        res.status(200).json({ message: `Status updated to ${status}`, appointment });
+        res.status(200).json({ 
+            message: `Patient state updated to ${status ? 'Admitted' : 'Discharged'}`, 
+            patient: updatedPatient 
+        });
     } catch (err) {
+        console.log("Error", err.message);
         res.status(500).json({ error: err.message });
     }
-};
+};              
+
+module.exports = { UpdateAppointmentStatus };
 
 const GetPatientMedicalRecords = async (req, res) => {
     try {
@@ -41,9 +60,9 @@ const GetPatientMedicalRecords = async (req, res) => {
         const patient = await Patient.findById(patientId);
         if (!patient) return res.status(404).json({ message: "Patient not found" });
 
-        const history = await Appointment.find({ 
+        const history = await Appointment.find({
             patientId, 
-            status: 'Completed' 
+            status: 'Completed'
         }).populate('doctorId', 'name specialization');
 
         res.status(200).json({ patient, history });
@@ -78,4 +97,53 @@ const UpdatePatientMedicalHistory = async (req, res) => {
     }
 };
 
-module.exports = { GetMySchedule, UpdateAppointmentStatus, GetPatientMedicalRecords, UpdatePatientMedicalHistory };
+const CreateClinicalRecord = async (req, res) => {
+    try {
+        const { patientId } = req.params; 
+        const { doctorId, record } = req.body;
+
+        if (!record || record.trim() === "") {
+            return res.status(400).json({ message: "Record content cannot be empty" });
+        }
+
+        const newRecord = new Record({
+            patientId,
+            doctorId,
+            record
+        });
+
+        await newRecord.save();
+
+        res.status(201).json({ 
+            message: "Clinical record saved successfully", 
+            newRecord 
+        });
+    } catch (err) {
+        console.error("Error saving record:", err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const GetDoctorProfile = async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "Not authorized, user ID missing" });
+        }
+
+        const doctor = await Doctor.findOne({ userId: req.user.id })
+            .populate('userId', 'email role');
+
+        if (!doctor) {
+            return res.status(404).json({ message: "Doctor profile not found" });
+        }
+
+        res.status(200).json(doctor);
+    } catch (err) {
+        console.error("Profile Fetch Error:", err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+module.exports = { GetMySchedule, UpdateAppointmentStatus, GetPatientMedicalRecords, UpdatePatientMedicalHistory, 
+    CreateClinicalRecord, GetDoctorProfile
+};

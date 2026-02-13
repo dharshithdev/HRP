@@ -6,7 +6,7 @@ const doctorSchema = new mongoose.Schema({
     specialization: { type: String, required: true },
     availability: [{ 
         day: String, 
-        slots: [String] 
+        slots: [String]     
     }],
     phone: String
 });  

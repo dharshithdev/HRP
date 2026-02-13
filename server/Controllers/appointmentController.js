@@ -1,6 +1,7 @@
 const Appointment = require('../Models/Appointment');
 const mongoose = require('mongoose'); 
 const Doctor = require('../Models/Doctor');
+const Patient = require('../Models/Patient');
 
 const BookAppointment = async (req, res) => {
     try {
@@ -45,29 +46,20 @@ const CancelAppointment = async (req, res) => {
     }
 }
 
+// Backend Controller
 const GetDoctorAppointments = async (req, res) => {
     try {
-        const { doctorId } = req.params; // This is actually the User ID from frontend
-
+        const { doctorId } = req.params;
         const doctorProfile = await Doctor.findOne({ userId: doctorId });
 
-        if (!doctorProfile) {
-            console.log("No doctor profile found for User ID:", doctorId);
-            return res.status(200).json([]); // Return empty if no profile
-        }
-
-        console.log("Found Doctor Profile ID:", doctorProfile._id);
-
         const appointments = await Appointment.find({ doctorId: doctorProfile._id })
-            .populate('patientId', 'name') 
+            // ADDED: gender, bloodGroup, allergies, and medicalHistory here
+            .populate('patientId', 'name gender bloodGroup allergies medicalHistory') 
             .sort({ appointmentDate: 1, timeSlot: 1 });
 
-        console.log(`Found ${appointments.length} appointments for Dr. ${doctorProfile.name}`);
-        
         res.status(200).json(appointments);
     } catch (error) {
-        console.error("Controller Error:", error);
-        res.status(500).json({ message: "Server Error", error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 

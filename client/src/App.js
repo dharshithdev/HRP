@@ -5,6 +5,8 @@ import Login from './Pages/Login';
 import AdminDashboard from './Pages/Admin/AdminDashboard';
 import DoctorDashboard from './Pages/Doctor/DoctorDashboard'; // New Import
 import ProtectedRoute from './Components/ProtectRoute';
+import Appointments from './Pages/Doctor/Appointments';
+import Settings from './Pages/Doctor/Settings';
 
 const RootRedirect = () => {
   const { user, loading } = useContext(AuthContext);
@@ -47,6 +49,18 @@ function App() {
           <Route path="/doctor/dashboard" element={
             <ProtectedRoute allowedRoles={['Doctor']}>
               <DoctorDashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/doctor/appointments" element={
+            <ProtectedRoute allowedRoles={['Doctor']}>
+              <Appointments />
+            </ProtectedRoute>
+          } />
+
+            <Route path="/doctor/settings" element={
+            <ProtectedRoute allowedRoles={['Doctor']}>
+              <Settings />
             </ProtectedRoute>
           } />
 
