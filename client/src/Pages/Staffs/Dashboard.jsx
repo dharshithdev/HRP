@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Contexts/AuthFile';
 import StaffSidebar from '../../Components/StaffSidebar';
 import axios from 'axios';
@@ -8,11 +9,12 @@ import {
 
 const StaffDashboard = () => {
   const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [dateTime, setDateTime] = useState(new Date());
   const [stats, setStats] = useState({
     todayPatients: 0,
     totalAppointments: 0,
-    availableDoctors: 0
+    availableDoctors: "0/0" // Updated to handle the string format we discussed
   });
 
   useEffect(() => {
@@ -25,7 +27,6 @@ const StaffDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
-      // Replace with your actual endpoints
       const res = await axios.get('http://localhost:5000/api/staff/dashboard-stats', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -89,15 +90,32 @@ const StaffDashboard = () => {
               Quick Operations
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <ActionButton label="Register New Patient" sub="Create profile" />
-              <ActionButton label="Check-in Patient" sub="Mark arrival" />
-              <ActionButton label="Emergency Alert" sub="Notify ER" color="bg-red-500/20 text-red-400" />
-              <ActionButton label="Generate Bill" sub="Finalize visit" />
+              <ActionButton 
+                onClick={() => navigate('/staff/new-patient')} 
+                label="Register New Patient" 
+                sub="Create profile" 
+              />
+              <ActionButton 
+                onClick={() => navigate('/staff/patients')} 
+                label="Check-in Patient" 
+                sub="Mark arrival" 
+              />
+              <ActionButton 
+                onClick={() => console.log("Emergency protocol initiated")} 
+                label="Emergency Alert" 
+                sub="Notify ER" 
+                color="bg-red-500/20 text-red-400" 
+              />
+              <ActionButton 
+                onClick={() => navigate('/staff/billing')} 
+                label="Generate Bill" 
+                sub="Finalize visit" 
+              />
             </div>
           </div>
 
           {/* Pending Tasks / Notifications */}
-          <div className="bg-indigo-600 rounded-[2.5rem] p-8 shadow-2xl shadow-indigo-900/30 relative overflow-hidden">
+          <div className="bg-indigo-600 rounded-[2.5rem] p-8 shadow-2xl shadow-indigo-900/30 relative overflow-hidden text-white">
              <div className="relative z-10">
                 <h3 className="text-xl font-bold mb-2">System Notice</h3>
                 <p className="text-indigo-100/70 mb-6">3 doctors have not updated their availability for next week.</p>
@@ -113,6 +131,7 @@ const StaffDashboard = () => {
   );
 };
 
+// Helper Components
 const StatCard = ({ label, value, icon, color, bg }) => (
   <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 hover:border-white/20 transition-all group">
     <div className={`w-14 h-14 ${bg} ${color} rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform`}>
@@ -123,8 +142,11 @@ const StatCard = ({ label, value, icon, color, bg }) => (
   </div>
 );
 
-const ActionButton = ({ label, sub, color = "bg-white/5 text-white" }) => (
-  <button className={`${color} p-6 rounded-3xl text-left hover:scale-[1.02] transition-all border border-white/5`}>
+const ActionButton = ({ label, sub, onClick, color = "bg-white/5 text-white" }) => (
+  <button 
+    onClick={onClick} 
+    className={`${color} p-6 rounded-3xl text-left hover:scale-[1.02] transition-all border border-white/5 w-full`}
+  >
     <p className="font-bold">{label}</p>
     <p className="text-[10px] opacity-50 uppercase font-black tracking-widest mt-1">{sub}</p>
   </button>

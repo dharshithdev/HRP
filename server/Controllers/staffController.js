@@ -154,5 +154,20 @@ const GetStaffDashboardStats = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+const GetAllDoctors = async (req, res) => {
+    try {
+        // .populate allows us to get the 'email' and 'isActive' status from the User model
+        const doctors = await Doctor.find()
+            .populate('userId', 'email isActive')
+            .sort({ name: 1 }); // Alphabetical order
+
+        res.status(200).json(doctors);
+    } catch (err) {
+        console.error("Error fetching doctors:", err.message);
+        res.status(500).json({ error: "Server error while fetching doctor records" });
+    }
+};
+
 module.exports = { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient,
-     BookAppointment, GetStaffDashboardStats };
+     BookAppointment, GetStaffDashboardStats, GetAllDoctors };

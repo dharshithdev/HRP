@@ -20,7 +20,7 @@ const DoctorRecords = () => {
   const fetchDoctors = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/staff/doctors', { 
+      const res = await axios.get('http://localhost:5000/api/staff/doctor-records', { 
         headers: { Authorization: `Bearer ${token}` }
       });
       setDoctors(res.data);

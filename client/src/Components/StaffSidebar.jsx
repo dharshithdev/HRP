@@ -9,6 +9,7 @@ const StaffSidebar = ({ logout }) => {
     { name: 'Dashboard', icon: <FiGrid />, path: '/staff/dashboard' },
     { name: 'Patient Records', icon: <FiUsers />, path: '/staff/patient-records' },
     { name: 'Doctor Records', icon: <FiClipboard />, path: '/staff/doctor-records' },
+    { name: 'New Patient', icon: <FiClipboard />, path: '/staff/new-patient' },
     { name: 'Book Appointment', icon: <FiPlusSquare />, path: '/staff/book' },
   ];
 

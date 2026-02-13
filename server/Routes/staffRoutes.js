@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { RegisterPatient, SearchPatients, DischargePatient, GetPatientHistory, DeletePatient,
-     BookAppointment, GetStaffDashboardStats } = require('../controllers/staffController');
+     BookAppointment, GetStaffDashboardStats,GetAllDoctors } = require('../controllers/staffController');
 
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
@@ -19,6 +19,8 @@ router.get('/dashboard-stats', authorize(['Staff']), GetStaffDashboardStats);
 
 
 router.get('/patients/history/:id', protect, authorize(['Staff']), GetPatientHistory);
+
+router.get('/doctor-records', protect, authorize(['Staff']), GetAllDoctors);
 
 router.patch('/discharge/:id', authorize(['Staff']), DischargePatient);
 
