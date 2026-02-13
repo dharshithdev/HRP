@@ -78,7 +78,7 @@ const DoctorDashboard = () => {
         {/* Highlighted Next Appointment - Reduced Height Version */}
         <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[2rem] p-7 flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-white">Next Patient</h3>
+            <h3 className="text-xl font-bold text-white">Next Appointment</h3>
             <button onClick={() => navigate('/doctor/appointments')} className="text-indigo-400 text-sm font-bold flex items-center gap-2 hover:underline">
               Full Schedule <FiArrowRight />
             </button>
@@ -114,15 +114,6 @@ const DoctorDashboard = () => {
                 </div>
               </div>
 
-              {/* Streamlined Action Buttons */}
-              <div className="mt-6 pt-5 border-t border-white/5 flex gap-3">
-                <button className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/20">
-                  Start Consultation
-                </button>
-                <button className="px-5 py-3 bg-white/5 hover:bg-white/10 text-white text-sm font-bold rounded-xl transition-all border border-white/10">
-                  Records
-                </button>
-              </div>
             </motion.div>
           ) : (
             <div className="py-12 border-2 border-dashed border-white/5 rounded-3xl flex items-center justify-center">

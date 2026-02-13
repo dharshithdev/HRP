@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { RegisterPatient, SearchPatients, GetPatientHistory, DeletePatient,
      BookAppointment, GetStaffDashboardStats, GetAllDoctors, GetAvailableSlots, CreateAlert,
-     GetAllAppointments, UpdateStatus } = require('../controllers/staffController');
+     GetAllAppointments, UpdateStatus, GetTodayQueue } = require('../controllers/staffController');
 
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
@@ -28,7 +28,7 @@ router.post('/appointments/book', protect, authorize(['Staff']), BookAppointment
 router.post('/alerts', protect, authorize(['Staff']), CreateAlert);
 
 router.delete('/delete/:id', authorize(['Admin']), DeletePatient);
-
+router.get('/dashboard/queue', protect, authorize(['Staff']), GetTodayQueue);
 router.get('/appointments', protect, authorize(['Staff']), GetAllAppointments);
 router.patch('/appointments/:id', protect, authorize(['Staff']), UpdateStatus);
 

@@ -233,6 +233,30 @@ const UpdateStatus = async (req, res) => {
     }
 };
 
+// Get upcoming appointments for the current day
+const GetTodayQueue = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const queue = await Appointment.find({
+            appointmentDate: { $gte: today, $lt: tomorrow },
+            status: 'Confirmed'
+        })
+        .populate('patientId', 'name')
+        .populate('doctorId', 'name')
+        .sort({ timeSlot: 1 }) // Sorting by time
+        .limit(5); // Just get the next 5
+
+        res.json(queue);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = { RegisterPatient, SearchPatients, GetPatientHistory, DeletePatient,
      BookAppointment, GetStaffDashboardStats, GetAllDoctors, GetAvailableSlots, CreateAlert,
-     GetAllAppointments, UpdateStatus };
+     GetAllAppointments, UpdateStatus, GetTodayQueue };

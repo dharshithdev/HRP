@@ -36,6 +36,20 @@ const StaffDashboard = () => {
     }
   };
 
+  const [queue, setQueue] = useState([]);
+
+// 2. Add fetch function inside StaffDashboard
+const fetchQueue = async () => {
+  try {
+    const res = await axios.get('http://localhost:5000/api/staff/dashboard/queue', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    setQueue(res.data);
+  } catch (err) {
+    console.error("Queue fetch error", err);
+  }
+};
+
   return (
     <div className="flex min-h-screen bg-[#060910] text-white">
       <StaffSidebar logout={logout} />
@@ -115,15 +129,51 @@ const StaffDashboard = () => {
           </div>
 
           {/* Pending Tasks / Notifications */}
-          <div className="bg-indigo-600 rounded-[2.5rem] p-8 shadow-2xl shadow-indigo-900/30 relative overflow-hidden text-white">
-             <div className="relative z-10">
-                <h3 className="text-xl font-bold mb-2">System Notice</h3>
-                <p className="text-indigo-100/70 mb-6">3 doctors have not updated their availability for next week.</p>
-                <button className="bg-white text-indigo-600 px-6 py-3 rounded-xl font-black flex items-center gap-2 hover:scale-105 transition-all">
-                  Send Reminders <FiArrowRight />
-                </button>
-             </div>
-             <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="bg-white/5 rounded-[2.5rem] p-8 border border-white/10 relative overflow-hidden flex flex-col h-full">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                <FiClock className="text-indigo-500" /> Live Queue
+              </h3>
+              <span className="flex items-center gap-1.5 text-[10px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full font-black uppercase tracking-widest">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                Today
+              </span>
+            </div>
+            
+            <div className="space-y-4 flex-1">
+              {queue.length > 0 ? (
+                queue.map((item) => (
+                  <div key={item._id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-indigo-500/30 transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-600/20 flex items-center justify-center font-bold text-indigo-400 text-sm">
+                        {item.patientId?.name[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold">{item.patientId?.name}</p>
+                        <p className="text-[10px] text-slate-500 uppercase font-black tracking-wider">
+                          Dr. {item.doctorId?.name}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-mono font-bold text-indigo-400">{item.timeSlot}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center opacity-30 py-10">
+                  <FiCheckCircle size={40} className="mb-2" />
+                  <p className="text-xs font-bold uppercase tracking-widest">Queue Clear</p>
+                </div>
+              )}
+            </div>
+            
+            <button 
+              onClick={() => navigate('/staff/all-appointments')}
+              className="w-full mt-6 py-4 bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+            >
+              View Full Schedule
+            </button>
           </div>
         </div>
       </main>
