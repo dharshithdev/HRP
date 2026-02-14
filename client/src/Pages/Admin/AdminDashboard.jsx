@@ -51,9 +51,7 @@ const AdminDashboard = () => {
             <h2 className="text-4xl font-black italic tracking-tighter uppercase">Central Command</h2>
             <p className="text-slate-500 font-medium">Real-time system pulse</p>
           </div>
-          <button className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all shadow-lg shadow-white/5">
-            <FiPlus strokeWidth={3} /> Create User
-          </button>
+
         </header>
 
         {/* STATS GRID */}

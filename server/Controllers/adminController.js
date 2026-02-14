@@ -43,16 +43,6 @@ const ToggleUserActiveStatus = async (req, res) => {
     }
 };
 
-// --- STAFF MANAGEMENT ---
-
-const ViewStaff = async (req, res) => {
-    try {
-        const staff = await Staff.find().populate('userId', 'email isActive');
-        res.status(200).json(staff);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
 
 const DeleteStaff = async (req, res) => {
     try {
@@ -60,16 +50,6 @@ const DeleteStaff = async (req, res) => {
         await Staff.findByIdAndDelete(staffId);
         await User.findByIdAndDelete(userId);
         res.status(200).json({ message: "Staff account permanently deleted" });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-
-const ViewPatients = async (req, res) => {
-    try {
-        const patients = await Patient.find();
-        res.status(200).json(patients);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -144,5 +124,81 @@ const GetAllStaff = async (req, res) => {
     }
 };
 
-module.exports = { GetAllDoctors, ToggleUserActiveStatus, ViewStaff, DeleteStaff, ViewPatients, 
-    DeletePatient, DeleteDoctor, GetAdminStats, GetAllStaff }; 
+const GetAllAppointments = async (req, res) => {
+    try {
+        const appointments = await Appointment.find()
+            .populate('doctorId', 'name specialization')
+            .sort({ appointmentDate: -1 }); // Newest first
+
+        res.status(200).json(appointments);
+    } catch (err) {
+        res.status(500).json({ error: "Fetch failed: " + err.message });
+    }
+};
+
+const UpdateAppointmentStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        console.log(status);
+        const appointment = await Appointment.findByIdAndUpdate(
+            req.params.id, 
+            { status }, 
+            { new: true }
+        );
+        res.json(appointment);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const GetAllPatients = async (req, res) => {
+    try {
+        const patients = await Appointment.aggregate([
+            {
+                // 1. Group by patientId (which exists)
+                $group: {
+                    _id: "$patientId", 
+                    totalVisits: { $sum: 1 },
+                    lastVisit: { $max: "$appointmentDate" },
+                    recentDoctor: { $first: "$doctorId" }
+                }
+            },
+            {
+                // 2. Join with the Patients collection to get the name and contact
+                $lookup: {
+                    from: "patients", // name of the collection in MongoDB
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "patientDetails"
+                }
+            },
+            { $unwind: "$patientDetails" }, // Turn array into object
+            {
+                // 3. Clean up the output
+                $project: {
+                    _id: 1,
+                    name: "$patientDetails.name",
+                    contact: "$patientDetails.contact",
+                    totalVisits: 1,
+                    lastVisit: 1,
+                    recentDoctor: 1
+                }
+            },
+            { $sort: { lastVisit: -1 } }
+        ]);
+        
+        // Populate doctor info
+        const populatedData = await Appointment.populate(patients, { 
+            path: 'recentDoctor', 
+            select: 'name specialization' 
+        });
+
+        res.status(200).json(populatedData);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+module.exports = { GetAllDoctors, ToggleUserActiveStatus, DeleteStaff, 
+    DeletePatient, DeleteDoctor, GetAdminStats, GetAllStaff, GetAllAppointments, 
+    UpdateAppointmentStatus, GetAllPatients }; 

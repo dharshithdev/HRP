@@ -19,9 +19,9 @@ const AdminSidebar = ({ logout }) => {
     { name: 'Dashboard', icon: <FiGrid />, path: '/admin/dashboard' },
     { name: 'Staff Management', icon: <FiUsers />, path: '/admin/staffs' },
     { name: 'Doctor Directory', icon: <FiActivity />, path: '/admin/doctors' },
-    { name: 'System Logs', icon: <FiDatabase />, path: '/admin/logs' },
-    { name: 'Analytics', icon: <FiBarChart2 />, path: '/admin/analytics' },
-    { name: 'Permissions', icon: <FiShield />, path: '/admin/permissions' },
+    { name: 'Create USer', icon: <FiShield />, path: '/admin/create-user' },
+    { name: 'Appointments', icon: <FiActivity />, path: '/admin/adm-appointments' },
+    { name: 'Patients', icon: <FiActivity />, path: '/admin/adm-patients' },
     { name: 'Settings', icon: <FiSettings />, path: '/admin/settings'},
   ];
 

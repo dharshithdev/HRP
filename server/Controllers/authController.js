@@ -5,40 +5,72 @@ const Admin = require('../Models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const Register = async (req, res) => {  
+const Register = async (req, res) => {
     try {
         const { email, password, role, name, ...profileData } = req.body;
 
-        // 1. Check if user exists
-        let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ message: "User already exists" });
+        // 1. Validation
+        if (!email || !password || !role || !name) {
+            return res.status(400).json({ message: "Please fill all required fields." });
+        }
 
-        // 2. Hash Password
+        // 2. Check if user already exists
+        let user = await User.findOne({ email });
+        if (user) return res.status(400).json({ message: "Email already registered." });
+
+        // 3. Hash Password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // 3. Create User Account
-        user = new User({ email, password: hashedPassword, role });
+        // 4. Create Main User Account
+        user = new User({ 
+            email, 
+            password: hashedPassword, 
+            role 
+        });
         await user.save();
 
-        if (role === 'Doctor') {
-            await Doctor.create({ userId: user._id, name, ...profileData });
-        } else if (role === 'Staff') {
-            await Staff.create({ userId: user._id, name, ...profileData });
-        } else if (role === 'Admin') {
-            await Admin.create({ userId: user._id, name, ...profileData });
+        // 5. Create Profile based on Role
+        // profileData contains extra fields like employeeId, specialization, etc.
+        try {
+            if (role === 'Doctor') {
+                await Doctor.create({ 
+                    userId: user._id, 
+                    name, 
+                    specialization: profileData.specialization,
+                    phone: profileData.phone,
+                    availability: [] // Initialize empty for now
+                });
+            } else if (role === 'Staff') {
+                await Staff.create({ 
+                    userId: user._id, 
+                    name, 
+                    employeeId: profileData.employeeId,
+                    department: profileData.department,
+                    shift: profileData.shift,
+                    phone: profileData.phone
+                });
+            } else if (role === 'Admin') {
+                await Admin.create({ 
+                    userId: user._id, 
+                    name 
+                });
+            }
+        } catch (profileError) {
+            // Rollback: Delete the user account if profile creation fails
+            await User.findByIdAndDelete(user._id);
+            throw profileError;
         }
-        
-        // Return success without logging the admin out
+
         res.status(201).json({ 
             message: `${role} account for ${name} created successfully.` 
         });
 
     } catch (err) {
-        console.log(err.message)
-        res.status(500).json({ error: err.message });
+        console.error("Registration Error:", err.message);
+        res.status(500).json({ error: "Server Error: " + err.message });
     }
-}; 
+};
 
 const Login = async (req, res) => {
     try {
