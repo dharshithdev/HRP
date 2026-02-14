@@ -14,6 +14,8 @@ import Register from './Pages/Staffs/Register';
 import BookAppointment from './Pages/Staffs/Appointment';
 import Alert from './Pages/Staffs/Alert';
 import AllAppointments from './Pages/Staffs/AllAppointments'
+import CheckAlerts from './Pages/Doctor/CheckAlerts';
+import Schedule from './Pages/Doctor/Schedule';
 
 const RootRedirect = () => {
   const { user, loading } = useContext(AuthContext);
@@ -71,6 +73,17 @@ function App() {
             </ProtectedRoute>
           } />
 
+           <Route path="/doctor/checkalerts" element={
+            <ProtectedRoute allowedRoles={['Doctor']}>
+              <CheckAlerts />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/doctor/schedule" element={
+            <ProtectedRoute allowedRoles={['Doctor']}>
+              <Schedule />
+            </ProtectedRoute>
+          } />
           {/* Staff Protected Routes (Placeholder element for now) */}
           <Route path="/staff/dashboard" element={
             <ProtectedRoute allowedRoles={['Staff']}>

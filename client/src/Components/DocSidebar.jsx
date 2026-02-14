@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiHome, FiCalendar, FiSettings, FiLogOut, FiChevronRight } from 'react-icons/fi';
+import { FiHome, FiCalendar, FiSettings, FiLogOut, FiChevronRight, FiClock } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Sidebar = ({ logout }) => {
@@ -10,6 +10,7 @@ const Sidebar = ({ logout }) => {
   const menuItems = [
     { label: 'Dashboard', icon: <FiHome />, path: '/doctor-dashboard' },
     { label: 'Appointments', icon: <FiCalendar />, path: '/doctor/appointments' },
+    { label: 'Schedule', icon: <FiClock />, path: '/doctor/schedule' },
     { label: 'Settings', icon: <FiSettings />, path: '/doctor/settings' },
   ]; 
 

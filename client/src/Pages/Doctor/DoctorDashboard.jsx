@@ -127,12 +127,15 @@ const DoctorDashboard = () => {
             <div className="relative z-10">
               <h3 className="font-bold text-xl text-white mb-3">Health Monitor</h3>
               <p className="text-indigo-100/70 text-sm mb-8 leading-relaxed">Check real-time alerts for patients with critical conditions or pending lab results.</p>
-              <button className="w-full py-4 bg-white text-indigo-700 font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:bg-slate-50 transition-all group relative overflow-hidden">
+              <button 
+                onClick={() => navigate('/doctor/checkalerts')}
+                className="w-full py-4 bg-white text-indigo-700 font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:bg-slate-50 transition-all group relative overflow-hidden"
+              >
                 <span className="relative z-10 transition-transform duration-300 group-hover:-translate-y-full group-hover:opacity-0 flex items-center justify-center">
                   Check Alerts
                 </span>
                 <span className="absolute inset-0 flex items-center justify-center translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 text-indigo-700 font-black text-xs uppercase tracking-widest">
-                  Checking
+                  Go to Alerts
                 </span>
               </button>
             </div>

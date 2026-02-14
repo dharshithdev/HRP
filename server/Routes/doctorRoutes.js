@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { GetMySchedule, UpdateAppointmentStatus, GetPatientMedicalRecords, UpdatePatientMedicalHistory,
-    CreateClinicalRecord, GetDoctorProfile
+    CreateClinicalRecord, GetDoctorProfile, GetAlerts, UpdateAvailability
  } = require('../Controllers/doctorController');
 const {Login} = require("../Controllers/authController");
 const { protect } = require('../Middlewares/Protect');
@@ -23,5 +23,6 @@ router.patch('/update-history/:patientId/history', protect, authorize(['Doctor']
 console.log("Controller Check:", CreateClinicalRecord);
 router.post('/records/:patientId', protect, authorize(['Doctor']), CreateClinicalRecord);
 
-
+router.get('/alerts', protect, authorize(['Doctor']), GetAlerts);
+router.put('/update-schedule', protect, authorize(['Doctor']), UpdateAvailability);
 module.exports = router;

@@ -2,6 +2,7 @@ const Appointment = require('../Models/Appointment');
 const Patient = require('../Models/Patient');
 const Record = require("../Models/Record");
 const Doctor = require("../Models/Doctor");
+const Alert = require("../Models/Alert");
 
 const GetMySchedule = async (req, res) => {
     try { 
@@ -144,6 +145,39 @@ const GetDoctorProfile = async (req, res) => {
     }
 };
 
+const GetAlerts = async (req, res) => {
+    try {
+        const alerts = await Alert.find().sort({ _id: -1 });
+        res.status(200).json(alerts);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch alerts: " + err.message });
+    }
+};
+
+const UpdateAvailability = async (req, res) => {
+    try {
+        const { availability } = req.body;
+        
+        // Security: Ensure it's Sunday (Optional but recommended)
+        const today = new Date();
+        if (today.getDay() !== 0) { // 0 is Sunday
+            return res.status(403).json({ message: "Availability can only be updated on Sundays." });
+        }
+
+        const updatedDoctor = await Doctor.findOneAndUpdate(
+            { userId: req.user._id }, // Assuming req.user._id comes from protect middleware
+            { availability: availability },
+            { new: true }
+        );
+
+        if (!updatedDoctor) return res.status(404).json({ message: "Doctor record not found" });
+
+        res.json({ message: "Schedule updated successfully!", availability: updatedDoctor.availability });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = { GetMySchedule, UpdateAppointmentStatus, GetPatientMedicalRecords, UpdatePatientMedicalHistory, 
-    CreateClinicalRecord, GetDoctorProfile
+    CreateClinicalRecord, GetDoctorProfile, GetAlerts, UpdateAvailability
 };
