@@ -6,7 +6,7 @@ const Appointment = require("../Models/Appointment");
 const Alerts = require("../Models/Alert");
 // --- DOCTOR MANAGEMENT ---
 
-const ViewDoctors = async (req, res) => {
+const GetAllDoctors = async (req, res) => {
     try {
         const doctors = await Doctor.find().populate('userId', 'email isActive');
         res.status(200).json(doctors);
@@ -14,6 +14,7 @@ const ViewDoctors = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 const DeleteDoctor = async (req, res) => {
     try {
@@ -64,7 +65,6 @@ const DeleteStaff = async (req, res) => {
     }
 };
 
-// --- PATIENT MANAGEMENT ---
 
 const ViewPatients = async (req, res) => {
     try {
@@ -134,5 +134,15 @@ const GetAdminStats = async (req, res) => {
     }
 };
 
-module.exports = { ViewDoctors, ToggleUserActiveStatus, ViewStaff, DeleteStaff, ViewPatients, 
-    DeletePatient, DeleteDoctor, GetAdminStats }; 
+const GetAllStaff = async (req, res) => {
+    try {
+        // .populate('userId') brings in the email and role from the User model
+        const staffMembers = await Staff.find().populate('userId', 'email isActive');
+        res.status(200).json(staffMembers);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch staff: " + err.message });
+    }
+};
+
+module.exports = { GetAllDoctors, ToggleUserActiveStatus, ViewStaff, DeleteStaff, ViewPatients, 
+    DeletePatient, DeleteDoctor, GetAdminStats, GetAllStaff }; 

@@ -17,6 +17,8 @@ import AllAppointments from './Pages/Staffs/AllAppointments'
 import CheckAlerts from './Pages/Doctor/CheckAlerts';
 import Schedule from './Pages/Doctor/Schedule';
 import Unauthorized from './Pages/Unauthorized';
+import StaffManagement from './Pages/Admin/StaffManagement';
+import DoctorManagement from './Pages/Admin/DoctorManagement';
 
 const RootRedirect = () => {
   const { user, loading } = useContext(AuthContext);
@@ -52,6 +54,18 @@ function App() {
           <Route path="/admin/dashboard" element={
             <ProtectedRoute allowedRoles={['Admin']}>
               <AdminDashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/staffs" element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <StaffManagement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/doctors" element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DoctorManagement />
             </ProtectedRoute>
           } />
 

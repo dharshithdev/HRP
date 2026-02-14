@@ -17,7 +17,7 @@ const AdminSidebar = ({ logout }) => {
 
   const menuItems = [
     { name: 'Dashboard', icon: <FiGrid />, path: '/admin/dashboard' },
-    { name: 'Staff Management', icon: <FiUsers />, path: '/admin/users' },
+    { name: 'Staff Management', icon: <FiUsers />, path: '/admin/staffs' },
     { name: 'Doctor Directory', icon: <FiActivity />, path: '/admin/doctors' },
     { name: 'System Logs', icon: <FiDatabase />, path: '/admin/logs' },
     { name: 'Analytics', icon: <FiBarChart2 />, path: '/admin/analytics' },
