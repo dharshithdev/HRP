@@ -15,7 +15,7 @@ const AllAppointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/staff/appointments', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/appointments`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setAppointments(res.data);
@@ -25,7 +25,7 @@ const AllAppointments = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      await axios.patch(`http://localhost:5000/api/staff/appointments/${id}`, { status }, {
+      await axios.patch(`${process.env.REACT_APP_API_URL}/api/staff/appointments/${id}`, { status }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       fetchAppointments();

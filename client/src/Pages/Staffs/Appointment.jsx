@@ -30,7 +30,7 @@ const BookAppointment = () => {
 
   const fetchPatients = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/staff/patients/search?query=${searchQuery}`, {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/patients/search?query=${searchQuery}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setPatients(res.data);
@@ -39,7 +39,7 @@ const BookAppointment = () => {
 
   const fetchDoctors = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/staff/doctor-records', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/doctor-records`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setDoctors(res.data);
@@ -101,7 +101,7 @@ const BookAppointment = () => {
     setBooking(prev => ({ ...prev, appointmentDate: dateString, timeSlot: '' }));
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/staff/appointments/available-slots?doctorId=${booking.doctorId}&date=${dateString}`, {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/appointments/available-slots?doctorId=${booking.doctorId}&date=${dateString}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       
@@ -117,7 +117,7 @@ const BookAppointment = () => {
 
   const handleBook = async () => {
     try {
-      await axios.post('http://localhost:5000/api/staff/appointments/book', booking, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/staff/appointments/book`, booking, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       alert("Success! Appointment Confirmed.");

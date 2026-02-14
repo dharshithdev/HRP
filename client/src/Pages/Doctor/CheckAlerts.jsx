@@ -14,7 +14,7 @@ const CheckAlerts = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/doctor/alerts', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/doctor/alerts`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAlerts(res.data);

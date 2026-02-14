@@ -27,7 +27,7 @@ const StaffDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/staff/dashboard-stats', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/dashboard-stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(res.data);
@@ -41,7 +41,7 @@ const StaffDashboard = () => {
 // 2. Add fetch function inside StaffDashboard
 const fetchQueue = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/staff/dashboard/queue', {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/dashboard/queue`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     });
     setQueue(res.data);

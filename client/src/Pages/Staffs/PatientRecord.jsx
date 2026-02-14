@@ -27,7 +27,7 @@ const PatientRecords = () => {
   const fetchPatients = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/staff/patients/search?query=${searchQuery}`, {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/patients/search?query=${searchQuery}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPatients(res.data);
@@ -40,7 +40,7 @@ const PatientRecords = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/staff/patients/history/${patientId}`, { 
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/staff/patients/history/${patientId}`, { 
         headers: { Authorization: `Bearer ${token}` }
       });
       setHistory(res.data);

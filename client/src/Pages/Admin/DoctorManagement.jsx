@@ -15,7 +15,7 @@ const DoctorManagement = () => {
   const fetchDoctors = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/admin/doctors', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/doctors`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDoctors(res.data);
@@ -32,7 +32,7 @@ const DoctorManagement = () => {
   const handleToggleStatus = async (userId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/admin/toggle-status/${userId}`, {}, {
+      await axios.patch(`${process.env.REACT_APP_API_URL}/api/admin/toggle-status/${userId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchDoctors(); // Refresh list
@@ -43,7 +43,7 @@ const DoctorManagement = () => {
     if (!window.confirm("Delete this doctor and their login credentials?")) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/admin/doctor/${docId}/${userId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/doctor/${docId}/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const updated = doctors.filter(d => d._id !== docId);

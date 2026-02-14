@@ -15,7 +15,7 @@ const StaffManagement = () => {
   const fetchStaff = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/admin/staff', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/staff`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStaffList(res.data);
@@ -36,7 +36,7 @@ const StaffManagement = () => {
   const handleToggleStatus = async (userId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/admin/toggle-status/${userId}`, {}, {
+      await axios.patch(`${process.env.REACT_APP_API_URL}/api/admin/toggle-status/${userId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -62,7 +62,7 @@ const StaffManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/admin/staff/${staffId}/${userId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/staff/${staffId}/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

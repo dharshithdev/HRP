@@ -24,7 +24,7 @@ const Schedule = () => {
   const fetchSchedule = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/doctor/schedule', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/doctor/schedule`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAvailability(res.data || []);
@@ -71,7 +71,7 @@ const Schedule = () => {
   const saveSchedule = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/doctor/update-schedule', { availability }, {
+      await axios.put('${process.env.REACT_APP_API_URL}/api/doctor/update-schedule', { availability }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Weekly Schedule Published!");

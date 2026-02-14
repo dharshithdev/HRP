@@ -42,7 +42,7 @@ const Register = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/staff/register', formData, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/staff/register`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStatus({ type: 'success', msg: 'Patient registered successfully!' });

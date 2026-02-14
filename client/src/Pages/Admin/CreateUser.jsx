@@ -31,7 +31,7 @@ const CreateUser = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData, {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert(res.data.message);

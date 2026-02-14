@@ -14,7 +14,7 @@ const AdminAppointments = () => {
   const fetchAppointments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/admin/appointments', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/appointments`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAppointments(res.data);
@@ -28,7 +28,7 @@ const AdminAppointments = () => {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/admin/appointment/${id}`, { status }, {
+      await axios.patch(`${process.env.REACT_APP_API_URL}/api/admin/appointment/${id}`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchAppointments();

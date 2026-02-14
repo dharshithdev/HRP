@@ -25,7 +25,7 @@ const Appointments = () => {
   const fetchAppointments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/appointments/doctor/${user.id}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/appointments/doctor/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAppointments(response.data);
@@ -42,7 +42,7 @@ const Appointments = () => {
       const token = localStorage.getItem('token');
       
       await axios.patch(
-        `http://localhost:5000/api/doctor/appointment-status/${id}/status`, 
+        `${process.env.REACT_APP_API_URL}/api/doctor/appointment-status/${id}/status`, 
         { status: numericStatus }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -85,7 +85,7 @@ const handleSubmitClinicalNote = async () => {
 
         // 2. Update Patient Medical Profile
         await axios.patch(
-            `http://localhost:5000/api/doctor/update-history/${patientId}/history`, 
+            `${process.env.REACT_APP_API_URL}/api/doctor/update-history/${patientId}/history`, 
             historyPayload, 
             { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -93,7 +93,7 @@ const handleSubmitClinicalNote = async () => {
         // 3. Save current visit to the 'Records' collection
        if (currentRecord.trim()) {
             await axios.post(
-                `http://localhost:5000/api/doctor/records/${selectedApp.patientId._id}`, 
+                `${process.env.REACT_APP_API_URL}/api/doctor/records/${selectedApp.patientId._id}`, 
                 {
                     patientId: selectedApp.patientId._id, // Adding this just in case, though the URL has it
                     doctorId: user.id,

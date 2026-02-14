@@ -17,7 +17,7 @@ const Alert = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/staff/alerts', { notice }, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/staff/alerts`, { notice }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
