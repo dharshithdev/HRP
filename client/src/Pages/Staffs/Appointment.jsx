@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../Contexts/AuthFile';
 import StaffSidebar from '../../Components/StaffSidebar';
 import axios from 'axios';
-import { FiUser, FiSearch, FiCalendar, FiClock, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import { FiUser, FiCalendar, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 
 const BookAppointment = () => {
   const { logout } = useContext(AuthContext);

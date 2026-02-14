@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../Contexts/AuthFile';
 import AdminSidebar from '../../Components/AdminSidebar';
 import axios from 'axios';
-import { FiUser, FiSearch, FiPhone, FiCalendar, FiExternalLink, FiClipboard } from 'react-icons/fi';
+import { FiUser, FiSearch, FiPhone, FiCalendar, FiClipboard } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 const AdminPatients = () => {

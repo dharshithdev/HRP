@@ -4,7 +4,7 @@ import { AuthContext } from '../../Contexts/AuthFile';
 import StaffSidebar from '../../Components/StaffSidebar';
 import axios from 'axios';
 import { 
-  FiUsers, FiCalendar, FiClock, FiCheckCircle, FiArrowRight, FiActivity 
+  FiUsers, FiCalendar, FiClock, FiCheckCircle, FiActivity 
 } from 'react-icons/fi';
 
 const StaffDashboard = () => {

@@ -4,7 +4,7 @@ import StaffSidebar from '../../Components/StaffSidebar';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FiSearch, FiUser, FiCalendar, FiPhone, FiInfo, FiX, FiClock 
+  FiSearch, FiUser, FiCalendar, FiPhone, FiX 
 } from 'react-icons/fi';
 
 const PatientRecords = () => {

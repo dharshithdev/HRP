@@ -3,10 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   FiGrid, 
   FiUsers, 
-  FiShield, 
   FiSettings, 
   FiLogOut, 
-  FiActivity,
   FiUserPlus,
   FiUser,
   FiCalendar,

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../Contexts/AuthFile';
 import AdminSidebar from '../../Components/AdminSidebar';
 import axios from 'axios';
-import { FiSearch, FiPhone, FiMail, FiActivity, FiUser, FiTrash2, FiPower, FiCalendar, FiClock } from 'react-icons/fi';
+import { FiSearch, FiPhone, FiMail, FiActivity, FiUser, FiTrash2, FiPower, FiCalendar } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const DoctorManagement = () => {

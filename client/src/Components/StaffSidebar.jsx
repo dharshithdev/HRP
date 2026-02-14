@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  FiGrid, FiUsers, FiClipboard, FiPlusSquare, FiLogOut, FiActivity 
+  FiGrid, FiUsers, FiClipboard, FiLogOut, FiActivity 
 } from 'react-icons/fi';
 import { FaUserMd } from 'react-icons/fa';
 

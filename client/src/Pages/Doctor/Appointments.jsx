@@ -4,7 +4,7 @@ import Sidebar from '../../Components/DocSidebar';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FiSearch, FiCalendar, FiShield, FiX, FiCheckCircle, FiFileText 
+  FiSearch, FiShield, FiX, FiCheckCircle, FiFileText 
 } from 'react-icons/fi';
 
 const Appointments = () => {

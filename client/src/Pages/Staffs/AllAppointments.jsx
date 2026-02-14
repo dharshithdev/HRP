@@ -3,7 +3,7 @@ import { AuthContext } from '../../Contexts/AuthFile';
 import StaffSidebar from '../../Components/StaffSidebar';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCalendar, FiClock, FiUser, FiActivity, FiX, FiCheckCircle, FiChevronRight } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiUser, FiActivity, FiX, FiCheckCircle } from 'react-icons/fi';
 
 const AllAppointments = () => {
   const { logout } = useContext(AuthContext);
