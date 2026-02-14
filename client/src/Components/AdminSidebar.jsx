@@ -7,8 +7,10 @@ import {
   FiSettings, 
   FiLogOut, 
   FiActivity,
-  FiBarChart2,
-  FiDatabase
+  FiUserPlus,
+  FiUser,
+  FiCalendar,
+  FiHeart
 } from 'react-icons/fi';
 import { RiAdminLine } from 'react-icons/ri';
 
@@ -18,11 +20,11 @@ const AdminSidebar = ({ logout }) => {
   const menuItems = [
     { name: 'Dashboard', icon: <FiGrid />, path: '/admin/dashboard' },
     { name: 'Staff Management', icon: <FiUsers />, path: '/admin/staffs' },
-    { name: 'Doctor Directory', icon: <FiActivity />, path: '/admin/doctors' },
-    { name: 'Create USer', icon: <FiShield />, path: '/admin/create-user' },
-    { name: 'Appointments', icon: <FiActivity />, path: '/admin/adm-appointments' },
-    { name: 'Patients', icon: <FiActivity />, path: '/admin/adm-patients' },
-    { name: 'Settings', icon: <FiSettings />, path: '/admin/settings'},
+    { name: 'Doctor Directory', icon: <FiUser />, path: '/admin/doctors' },
+    { name: 'Create USer', icon: <FiUserPlus />, path: '/admin/create-user' },
+    { name: 'Appointments', icon: <FiCalendar />, path: '/admin/adm-appointments' },
+    { name: 'Patients', icon: <FiHeart />, path: '/admin/adm-patients' },
+    { name: 'Settings', icon: <FiSettings />, path: '/admin/adm-settings'},
   ];
 
   const handleLogout = () => {

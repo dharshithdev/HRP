@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { GetAllDoctors, ToggleUserActiveStatus, DeleteStaff, DeleteDoctor, 
     GetAdminStats, GetAllStaff, GetAllAppointments, GetAllPatients, UpdateAppointmentStatus,
-         } = require('../Controllers/adminController');
+    GetAdminProfile   } = require('../Controllers/adminController');
  
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
@@ -25,4 +25,7 @@ router.get('/appointments', protect, authorize(['Admin']), GetAllAppointments);
 router.patch('/appointment/:id', protect, authorize(['Admin']), UpdateAppointmentStatus);
 
 router.get('/patients', protect, authorize(['Admin']), GetAllPatients);
+
+router.get('/profile', protect, authorize(['Admin']), GetAdminProfile);
+
 module.exports = router;
