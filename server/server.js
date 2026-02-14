@@ -12,7 +12,11 @@ const appointmentRoutes = require('./Routes/appointmentRoutes');
 const app = express();
  
 // Middleware
-app.use(cors()); 
+//app.use(cors()); 
+app.use(cors({
+  origin: "https://hrp-seven.vercel.app", // REPLACE with your actual Vercel URL
+  credentials: true
+}));
 app.use(express.json());  
 
 // Routes
