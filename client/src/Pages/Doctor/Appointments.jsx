@@ -134,7 +134,7 @@ const handleSubmitClinicalNote = async () => {
           </div>
 
           <div className="space-y-4">
-            {appointments.map((app) => (
+            {appointments.map((app) => ( 
               <motion.div 
                 layout
                 key={app._id}
