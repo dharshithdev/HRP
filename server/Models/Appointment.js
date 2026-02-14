@@ -6,7 +6,7 @@ const appointmentSchema = new mongoose.Schema({
     appointmentDate: { type: Date, required: true }, 
     timeSlot: { type: String, required: true },      
     status: { type: String, enum: ['Pending', 'Confirmed', 'Completed', "Cancelled"], default: 'Confirmed' }
-});
+}, {timestamps: true});
 
 appointmentSchema.index({ doctorId: 1, appointmentDate: 1, timeSlot: 1 }, { unique: true });
 
