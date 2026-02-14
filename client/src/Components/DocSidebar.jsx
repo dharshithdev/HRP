@@ -12,13 +12,15 @@ const Sidebar = ({ logout }) => {
     { label: 'Appointments', icon: <FiCalendar />, path: '/doctor/appointments' },
     { label: 'Schedule', icon: <FiClock />, path: '/doctor/schedule' },
     { label: 'Settings', icon: <FiSettings />, path: '/doctor/settings' },
-  ]; 
+  ];
 
   return (
     <motion.aside 
-      initial={{ x: -100 }}
-      animate={{ x: 0 }}
-      className="w-72 bg-white/5 border-r border-white/10 flex flex-col p-6 hidden lg:flex sticky top-0 h-screen"
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      // Changed: Removed 'hidden' and 'lg:flex'. 
+      // Added: 'min-w-[288px]' to ensure it doesn't shrink.
+      className="w-72 min-w-[288px] bg-[#060910] border-r border-white/10 flex flex-col p-6 sticky top-0 h-screen z-40"
     >
       {/* Logo Section */}
       <div className="mb-12 px-2">

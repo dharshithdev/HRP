@@ -116,7 +116,7 @@ const handleSubmitClinicalNote = async () => {
     }
 };
 
-  if (loading) return <div className="min-h-screen bg-[#0b0f1a] flex items-center justify-center text-indigo-400 italic">Loading Schedule...</div>;
+  if (loading) return <div className="min-h-screen bg-[#0b0f1a] flex items-center justify-center text-indigo-400 italic">Loading Appointments...</div>;
 
   return (
     <div className="flex min-h-screen bg-[#0b0f1a] text-white">
