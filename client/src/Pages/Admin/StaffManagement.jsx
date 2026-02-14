@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../../Contexts/AuthFile';
 import AdminSidebar from '../../Components/AdminSidebar';
 import axios from 'axios';
@@ -9,27 +9,31 @@ const StaffManagement = () => {
   const { logout } = useContext(AuthContext);
   const [staffList, setStaffList] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Now used in UI
   const [search, setSearch] = useState("");
 
-  const fetchStaff = async () => {
+  // Wrapped in useCallback to satisfy the dependency array requirements
+  const fetchStaff = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/staff`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStaffList(res.data);
-      if (res.data.length > 0 && !selectedStaff) setSelectedStaff(res.data[0]);
+      if (res.data.length > 0 && !selectedStaff) {
+        setSelectedStaff(res.data[0]);
+      }
     } catch (err) {
       console.error("Error fetching staff", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedStaff]);
 
   useEffect(() => {
     fetchStaff();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // --- INTERACTION HANDLERS ---
 
@@ -40,14 +44,12 @@ const StaffManagement = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Update local state to reflect the toggle
       setStaffList(prev => prev.map(s => 
         s.userId._id === userId 
         ? { ...s, userId: { ...s.userId, isActive: !s.userId.isActive } } 
         : s
       ));
       
-      // Update selected view
       setSelectedStaff(prev => ({
         ...prev,
         userId: { ...prev.userId, isActive: !prev.userId.isActive }
@@ -58,7 +60,7 @@ const StaffManagement = () => {
   };
 
   const handleDelete = async (staffId, userId) => {
-    if (!window.confirm("Are you sure? This will permanently remove this staff member and their account.")) return;
+    if (!window.confirm("Are you sure? This will permanently remove this staff member.")) return;
 
     try {
       const token = localStorage.getItem('token');
@@ -66,7 +68,6 @@ const StaffManagement = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Remove from list and clear selection
       const updatedList = staffList.filter(s => s._id !== staffId);
       setStaffList(updatedList);
       setSelectedStaff(updatedList.length > 0 ? updatedList[0] : null);
@@ -79,6 +80,15 @@ const StaffManagement = () => {
     s.name.toLowerCase().includes(search.toLowerCase()) || 
     s.employeeId.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Show loading state to avoid blank screens during fetch
+  if (loading) {
+    return (
+      <div className="h-screen bg-[#060910] flex items-center justify-center">
+        <p className="text-indigo-500 font-black animate-pulse uppercase tracking-[0.3em]">Loading Registry...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[#060910] text-white overflow-hidden">
@@ -100,27 +110,27 @@ const StaffManagement = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {filteredStaff.map((staff) => (
               <button
                 key={staff._id}
                 onClick={() => setSelectedStaff(staff)}
                 className={`w-full text-left p-4 rounded-2xl transition-all flex items-center gap-4 border ${
                   selectedStaff?._id === staff._id 
-                  ? 'bg-indigo-600 border-indigo-400 shadow-lg shadow-indigo-600/20' 
+                  ? 'bg-indigo-600 border-indigo-400 shadow-lg' 
                   : 'bg-white/5 border-transparent hover:bg-white/10'
                 }`}
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                  selectedStaff?._id === staff._id ? 'bg-white/20 text-white' : 'bg-indigo-500/20 text-indigo-400'
+                  selectedStaff?._id === staff._id ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-400'
                 }`}>
                   {staff.name.charAt(0)}
                 </div>
                 <div>
                   <p className="font-bold text-sm">{staff.name}</p>
-                  <p className={`text-[10px] uppercase tracking-widest font-black ${
-                     selectedStaff?._id === staff._id ? 'text-indigo-200' : 'text-slate-500'
-                  }`}>{staff.employeeId}</p>
+                  <p className="text-[10px] uppercase tracking-widest font-black text-slate-500">
+                    {staff.employeeId}
+                  </p>
                 </div>
               </button>
             ))}
@@ -152,9 +162,6 @@ const StaffManagement = () => {
                         }`}>
                           {selectedStaff.userId?.isActive ? 'Active Member' : 'Account Disabled'}
                         </span>
-                        <span className="px-3 py-1 bg-white/5 text-slate-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">
-                          Role: Staff
-                        </span>
                      </div>
                    </div>
                 </div>
@@ -169,16 +176,12 @@ const StaffManagement = () => {
                 </div>
 
                 <div className="mt-12 pt-8 border-t border-white/5 flex gap-4">
-                   <button className="px-8 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-indigo-500 hover:text-white transition-all shadow-lg">
-                     Edit Profile
-                   </button>
-                   
                    <button 
                     onClick={() => handleToggleStatus(selectedStaff.userId._id)}
                     className={`px-8 py-4 font-black text-[10px] uppercase tracking-widest rounded-2xl flex items-center gap-2 transition-all border ${
                       selectedStaff.userId?.isActive 
-                      ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500 hover:text-white' 
-                      : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
+                      ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500' 
+                      : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500'
                     }`}
                    >
                      <FiPower /> {selectedStaff.userId?.isActive ? 'Deactivate' : 'Reactivate'}
@@ -195,7 +198,7 @@ const StaffManagement = () => {
             ) : (
               <div className="h-full flex flex-col items-center justify-center opacity-20">
                 <FiUsers size={64} className="mb-4" />
-                <p className="font-black uppercase tracking-widest">Select a staff member to view details</p>
+                <p className="font-black uppercase tracking-widest">Select a staff member</p>
               </div>
             )}
           </AnimatePresence>
