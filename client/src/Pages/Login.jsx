@@ -83,7 +83,7 @@ const Login = () => {
         {/* Login Card */}
         <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 shadow-2xl relative">
           <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
-          <p className="text-slate-400 text-sm mb-8">Enter your credentials to access your dashboard.</p>
+          <p className="text-slate-400 text-sm mb-8">Enter your credentials</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             
