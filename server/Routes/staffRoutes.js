@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { RegisterPatient, SearchPatients, GetPatientHistory, DeletePatient,
      BookAppointment, GetStaffDashboardStats, GetAllDoctors, GetAvailableSlots, CreateAlert,
-     GetAllAppointments, UpdateStatus, GetTodayQueue } = require('../controllers/staffController');
+     GetAllAppointments, UpdateStatus, GetTodayQueue } = require('../Controllers/staffController');
 
 const { protect } = require('../Middlewares/Protect');
 const {authorize} = require('../Middlewares/Role');
