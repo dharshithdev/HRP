@@ -16,6 +16,7 @@ import Alert from './Pages/Staffs/Alert';
 import AllAppointments from './Pages/Staffs/AllAppointments'
 import CheckAlerts from './Pages/Doctor/CheckAlerts';
 import Schedule from './Pages/Doctor/Schedule';
+import Unauthorized from './Pages/Unauthorized';
 
 const RootRedirect = () => {
   const { user, loading } = useContext(AuthContext);
@@ -43,7 +44,7 @@ function App() {
         <Routes>
           {/* Main Traffic Controller */}
           <Route path="/" element={<RootRedirect />} />
-
+          <Route path="/unauthorized" element={<Unauthorized />} />
           {/* Public Route */}
           <Route path="/login" element={<Login />} />
           

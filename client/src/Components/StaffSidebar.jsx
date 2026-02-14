@@ -3,12 +3,13 @@ import { NavLink } from 'react-router-dom';
 import { 
   FiGrid, FiUsers, FiClipboard, FiPlusSquare, FiLogOut, FiActivity 
 } from 'react-icons/fi';
+import { FaUserMd } from 'react-icons/fa';
 
 const StaffSidebar = ({ logout }) => {
   const menuItems = [
     { name: 'Dashboard', icon: <FiGrid />, path: '/staff/dashboard' },
     { name: 'Patient Records', icon: <FiUsers />, path: '/staff/patient-records' },
-    { name: 'Doctor Records', icon: <FiClipboard />, path: '/staff/doctor-records' },
+    { name: 'Doctor Records', icon: <FaUserMd />, path: '/staff/doctor-records' },
     { name: 'Appointments', icon: <FiClipboard />, path: '/staff/all-appointments' },
   ];
 
