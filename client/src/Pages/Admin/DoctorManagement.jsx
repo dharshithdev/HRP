@@ -123,7 +123,7 @@ const DoctorManagement = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                  <DetailBox icon={<FiMail />} label="Email" value={selectedDoc.userId?.email} />
+                  <DetailBox icon={<FiMail />} label="Email" value={selectedDoc.userId?.email ? selectedDoc.userId?.email : "Mail not Provided"} />
                   <DetailBox icon={<FiPhone />} label="Contact" value={selectedDoc.phone || "Not Provided"} />
                 </div>
 
