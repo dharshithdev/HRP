@@ -76,7 +76,7 @@ const CreateUser = () => {
 
             <div className="grid grid-cols-2 gap-6">
               <InputGroup icon={<FiUser />} label="Full Name">
-                <input type="text" name="name" required onChange={handleChange} className="form-input" placeholder="e.g. Dr. John Doe" />
+                <input type="text" name="name" required onChange={handleChange} className="form-input" placeholder="Name" />
               </InputGroup>
               <InputGroup icon={<FiShield />} label="System Role">
                 <select name="role" value={formData.role} onChange={handleChange} className="form-input bg-[#0f172a]">

@@ -128,8 +128,9 @@ const GetAllStaff = async (req, res) => {
 const GetAllAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find()
-            .populate('doctorId', 'name specialization')
-            .sort({ appointmentDate: -1 }); // Newest first
+                            .populate('doctorId', 'name specialization')
+                            .populate('patientId', 'name')                
+                            .sort({ appointmentDate: -1 });
 
         res.status(200).json(appointments);
     } catch (err) {

@@ -17,6 +17,7 @@ const AdminAppointments = () => {
       const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/appointments`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log(res.data);
       setAppointments(res.data);
     } catch (err) {
       console.error(err);
@@ -93,7 +94,7 @@ const AdminAppointments = () => {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
                   key={app._id} className="hover:bg-white/[0.02] transition-colors group"
                 >
-                  <td className="p-6 font-bold">{app.patientName}</td>
+                  <td className="p-6 font-bold">{app.patientId.name}</td>
                   <td className="p-6">
                     <p className="font-bold text-indigo-400">{app.doctorId?.name || 'Unassigned'}</p>
                     <p className="text-[10px] text-slate-500 uppercase">{app.doctorId?.specialization}</p>
