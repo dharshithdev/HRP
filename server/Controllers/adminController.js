@@ -128,7 +128,7 @@ const GetAllStaff = async (req, res) => {
 const GetAllAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find()
-                            .populate('doctorId', 'name specialization')
+                            .populate('doctorId', 'name specialization') 
                             .populate('patientId', 'name')                
                             .sort({ appointmentDate: -1 });
 

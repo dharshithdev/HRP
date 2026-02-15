@@ -11,4 +11,4 @@ const doctorSchema = new mongoose.Schema({
     phone: String
 }, {timestamps: true});  
 
-module.exports = mongoose.model('Doctor', doctorSchema);
+module.exports = mongoose.model('Doctor', doctorSchema); 

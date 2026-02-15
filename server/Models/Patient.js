@@ -13,4 +13,4 @@ const patientSchema = new mongoose.Schema({
 
 patientSchema.index({ name: 1, contact: 1 });
 
-module.exports = mongoose.model('Patient', patientSchema);
+module.exports = mongoose.model('Patient', patientSchema); 
