@@ -2,17 +2,19 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../../Contexts/AuthFile';
 import AdminSidebar from '../../Components/AdminSidebar';
 import axios from 'axios';
-import { FiUsers, FiSearch, FiPhone, FiMail, FiHash, FiClock, FiActivity, FiUser, FiTrash2, FiPower } from 'react-icons/fi';
+import { FiUsers, FiSearch, FiPhone, FiMail, FiHash, FiClock, FiActivity, FiUser, FiTrash2, FiPower, FiArrowLeft } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const StaffManagement = () => {
   const { logout } = useContext(AuthContext);
   const [staffList, setStaffList] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState(null);
-  const [loading, setLoading] = useState(true); // Now used in UI
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  
+  // Mobile UI Helper: track if we are in "list" mode or "detail" mode on small screens
+  const [viewMode, setViewMode] = useState('list'); 
 
-  // Wrapped in useCallback to satisfy the dependency array requirements
   const fetchStaff = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
@@ -20,7 +22,8 @@ const StaffManagement = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStaffList(res.data);
-      if (res.data.length > 0 && !selectedStaff) {
+      // Auto-select first only on Desktop
+      if (res.data.length > 0 && !selectedStaff && window.innerWidth > 1024) {
         setSelectedStaff(res.data[0]);
       }
     } catch (err) {
@@ -32,10 +35,12 @@ const StaffManagement = () => {
 
   useEffect(() => {
     fetchStaff();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, [fetchStaff]);
 
-  // --- INTERACTION HANDLERS ---
+  const handleSelectStaff = (staff) => {
+    setSelectedStaff(staff);
+    setViewMode('detail'); // Switch to detail view on mobile
+  };
 
   const handleToggleStatus = async (userId) => {
     try {
@@ -71,6 +76,7 @@ const StaffManagement = () => {
       const updatedList = staffList.filter(s => s._id !== staffId);
       setStaffList(updatedList);
       setSelectedStaff(updatedList.length > 0 ? updatedList[0] : null);
+      if (window.innerWidth < 1024) setViewMode('list');
     } catch (err) {
       alert("Failed to delete staff member");
     }
@@ -81,7 +87,6 @@ const StaffManagement = () => {
     s.employeeId.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Show loading state to avoid blank screens during fetch
   if (loading) {
     return (
       <div className="h-screen bg-[#060910] flex items-center justify-center">
@@ -91,19 +96,23 @@ const StaffManagement = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[#060910] text-white overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-screen bg-[#060910] text-white overflow-hidden">
       <AdminSidebar logout={logout} />
 
-      <main className="flex-1 flex overflow-hidden">
-        {/* LEFT SIDE: List of Staff */}
-        <div className="w-1/3 border-r border-white/5 flex flex-col">
-          <div className="p-8 pb-4">
-            <h2 className="text-2xl font-black italic tracking-tighter uppercase mb-6">Staff Registry</h2>
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        
+        {/* LEFT SIDE: List (Hidden on mobile when detail is active) */}
+        <div className={`
+          ${viewMode === 'detail' ? 'hidden lg:flex' : 'flex'} 
+          w-full lg:w-1/3 border-r border-white/5 flex-col h-full bg-[#060910]
+        `}>
+          <div className="p-6 lg:p-8 pb-4">
+            <h2 className="text-xl lg:text-2xl font-black italic tracking-tighter uppercase mb-6">Staff Registry</h2>
             <div className="relative">
               <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
               <input 
                 type="text" 
-                placeholder="Search by name or ID..."
+                placeholder="Search..."
                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-sm focus:border-indigo-500 outline-none transition-all"
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -114,20 +123,20 @@ const StaffManagement = () => {
             {filteredStaff.map((staff) => (
               <button
                 key={staff._id}
-                onClick={() => setSelectedStaff(staff)}
+                onClick={() => handleSelectStaff(staff)}
                 className={`w-full text-left p-4 rounded-2xl transition-all flex items-center gap-4 border ${
                   selectedStaff?._id === staff._id 
                   ? 'bg-indigo-600 border-indigo-400 shadow-lg' 
                   : 'bg-white/5 border-transparent hover:bg-white/10'
                 }`}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
                   selectedStaff?._id === staff._id ? 'bg-white/20' : 'bg-indigo-500/20 text-indigo-400'
                 }`}>
                   {staff.name.charAt(0)}
                 </div>
-                <div>
-                  <p className="font-bold text-sm">{staff.name}</p>
+                <div className="truncate">
+                  <p className="font-bold text-sm truncate">{staff.name}</p>
                   <p className="text-[10px] uppercase tracking-widest font-black text-slate-500">
                     {staff.employeeId}
                   </p>
@@ -137,25 +146,36 @@ const StaffManagement = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE: Detail View */}
-        <div className="flex-1 bg-[#080d17] p-12 overflow-y-auto relative">
+        {/* RIGHT SIDE: Details (Hidden on mobile when list is active) */}
+        <div className={`
+          ${viewMode === 'list' ? 'hidden lg:block' : 'block'} 
+          flex-1 bg-[#080d17] p-6 lg:p-12 overflow-y-auto relative h-full
+        `}>
+          {/* Back Button for Mobile */}
+          <button 
+            onClick={() => setViewMode('list')}
+            className="lg:hidden flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-widest mb-6"
+          >
+            <FiArrowLeft /> Back to Registry
+          </button>
+
           <AnimatePresence mode="wait">
             {selectedStaff ? (
               <motion.div
                 key={selectedStaff._id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
                 className="max-w-2xl mx-auto"
               >
-                <div className="flex items-center gap-6 mb-12">
-                   <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[2.5rem] flex items-center justify-center text-4xl shadow-2xl shadow-indigo-500/20">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-10 lg:mb-12">
+                   <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[2rem] lg:rounded-[2.5rem] flex items-center justify-center text-3xl lg:text-4xl shadow-2xl shadow-indigo-500/20 flex-shrink-0">
                      <FiUser />
                    </div>
-                   <div>
-                     <h3 className="text-4xl font-black italic tracking-tighter uppercase">{selectedStaff.name}</h3>
-                     <div className="flex items-center gap-3 mt-2">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                   <div className="text-center sm:text-left">
+                     <h3 className="text-2xl lg:text-4xl font-black italic tracking-tighter uppercase leading-tight">{selectedStaff.name}</h3>
+                     <div className="flex justify-center sm:justify-start items-center gap-3 mt-3">
+                        <span className={`px-3 py-1 rounded-full text-[9px] lg:text-[10px] font-black uppercase tracking-widest border ${
                           selectedStaff.userId?.isActive 
                           ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
                           : 'bg-red-500/10 text-red-500 border-red-500/20'
@@ -166,7 +186,7 @@ const StaffManagement = () => {
                    </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                   <InfoCard icon={<FiHash />} label="Employee ID" value={selectedStaff.employeeId} />
                   <InfoCard icon={<FiActivity />} label="Department" value={selectedStaff.department} />
                   <InfoCard icon={<FiMail />} label="Email Address" value={selectedStaff.userId?.email} />
@@ -175,13 +195,13 @@ const StaffManagement = () => {
                   <InfoCard icon={<FiUser />} label="Joined System" value={new Date(selectedStaff.createdAt).toLocaleDateString()} />
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-white/5 flex gap-4">
+                <div className="mt-10 lg:mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row gap-4">
                    <button 
                     onClick={() => handleToggleStatus(selectedStaff.userId._id)}
-                    className={`px-8 py-4 font-black text-[10px] uppercase tracking-widest rounded-2xl flex items-center gap-2 transition-all border ${
+                    className={`flex-1 px-6 py-4 font-black text-[10px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 transition-all border ${
                       selectedStaff.userId?.isActive 
-                      ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500' 
-                      : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500'
+                      ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500 hover:text-white' 
+                      : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
                     }`}
                    >
                      <FiPower /> {selectedStaff.userId?.isActive ? 'Deactivate' : 'Reactivate'}
@@ -189,7 +209,7 @@ const StaffManagement = () => {
 
                    <button 
                     onClick={() => handleDelete(selectedStaff._id, selectedStaff.userId._id)}
-                    className="px-8 py-4 bg-red-500/10 text-red-500 font-black text-[10px] uppercase tracking-widest rounded-2xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all flex items-center gap-2"
+                    className="flex-1 px-6 py-4 bg-red-500/10 text-red-500 font-black text-[10px] uppercase tracking-widest rounded-2xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2"
                    >
                      <FiTrash2 /> Permanent Delete
                    </button>
@@ -197,8 +217,8 @@ const StaffManagement = () => {
               </motion.div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center opacity-20">
-                <FiUsers size={64} className="mb-4" />
-                <p className="font-black uppercase tracking-widest">Select a staff member</p>
+                <FiUsers size={48} className="mb-4" />
+                <p className="font-black text-xs uppercase tracking-widest text-center">Select a staff member from the registry</p>
               </div>
             )}
           </AnimatePresence>
@@ -209,12 +229,12 @@ const StaffManagement = () => {
 };
 
 const InfoCard = ({ icon, label, value }) => (
-  <div className="bg-white/5 border border-white/5 p-6 rounded-[2rem] hover:border-white/10 transition-all">
+  <div className="bg-white/5 border border-white/5 p-5 lg:p-6 rounded-[1.5rem] lg:rounded-[2rem] hover:border-white/10 transition-all">
     <div className="flex items-center gap-3 text-indigo-400 mb-2">
       {icon}
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</span>
     </div>
-    <p className="text-lg font-bold">{value}</p>
+    <p className="text-base lg:text-lg font-bold truncate">{value}</p>
   </div>
 );
 

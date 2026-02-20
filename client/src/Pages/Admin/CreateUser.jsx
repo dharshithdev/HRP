@@ -13,11 +13,9 @@ const CreateUser = () => {
     password: '',
     role: 'Staff',
     name: '',
-    // Staff Specific
     employeeId: '',
     department: 'Reception',
     shift: 'Morning',
-    // Doctor Specific
     specialization: '',
     phone: '',
   });
@@ -35,7 +33,6 @@ const CreateUser = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert(res.data.message);
-      // Reset form logic here if desired
     } catch (err) {
       alert(err.response?.data?.message || "Registration failed");
     } finally {
@@ -44,42 +41,43 @@ const CreateUser = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#060910] text-white">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#060910] text-white">
       <AdminSidebar logout={logout} />
 
-      <main className="flex-1 p-10 flex justify-center items-center">
+      <main className="flex-1 p-4 sm:p-6 lg:p-10 flex justify-center items-center">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-2xl bg-white/5 border border-white/5 rounded-[3rem] p-12 shadow-2xl"
+          /* Responsive padding and rounding */
+          className="w-full max-w-2xl bg-white/5 border border-white/5 rounded-[2rem] lg:rounded-[3rem] p-6 sm:p-8 lg:p-12 shadow-2xl"
         >
-          <div className="flex items-center gap-4 mb-10">
-            <div className="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center text-2xl">
+          <div className="flex items-center gap-4 mb-8 lg:mb-10">
+            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-xl lg:text-2xl">
               <FiUserPlus />
             </div>
             <div>
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Initialize User</h2>
-              <p className="text-slate-500 text-sm">Create a new secure access node</p>
+              <h2 className="text-xl lg:text-3xl font-black italic uppercase tracking-tighter">Initialize User</h2>
+              <p className="text-slate-500 text-xs lg:text-sm">Create a new secure access node</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* CORE FIELDS */}
-            <div className="grid grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-5 lg:space-y-6">
+            {/* CORE FIELDS: Column on mobile, Grid on desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
               <InputGroup icon={<FiMail />} label="Email Address">
-                <input type="email" name="email" required onChange={handleChange} className="form-input" placeholder="name@hospital.com" />
+                <input type="email" name="email" required onChange={handleChange} className="form-input text-sm" placeholder="name@hospital.com" />
               </InputGroup>
               <InputGroup icon={<FiLock />} label="Access Password">
-                <input type="password" name="password" required onChange={handleChange} className="form-input" placeholder="••••••••" />
+                <input type="password" name="password" required onChange={handleChange} className="form-input text-sm" placeholder="••••••••" />
               </InputGroup>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
               <InputGroup icon={<FiUser />} label="Full Name">
-                <input type="text" name="name" required onChange={handleChange} className="form-input" placeholder="Name" />
+                <input type="text" name="name" required onChange={handleChange} className="form-input text-sm" placeholder="Name" />
               </InputGroup>
               <InputGroup icon={<FiShield />} label="System Role">
-                <select name="role" value={formData.role} onChange={handleChange} className="form-input bg-[#0f172a]">
+                <select name="role" value={formData.role} onChange={handleChange} className="form-input bg-[#0f172a] text-sm">
                   <option value="Staff">Staff Member</option>
                   <option value="Doctor">Doctor / Specialist</option>
                   <option value="Admin">System Administrator</option>
@@ -87,17 +85,17 @@ const CreateUser = () => {
               </InputGroup>
             </div>
 
-            <hr className="border-white/5 my-8" />
+            <hr className="border-white/5 my-6 lg:my-8" />
 
             {/* DYNAMIC ROLE-BASED FIELDS */}
             <AnimatePresence mode="wait">
               {formData.role === 'Staff' && (
-                <motion.div key="staff" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-2 gap-6">
+                <motion.div key="staff" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
                   <InputGroup icon={<FiHash />} label="Employee ID">
-                    <input type="text" name="employeeId" required onChange={handleChange} className="form-input" placeholder="STF-101" />
+                    <input type="text" name="employeeId" required onChange={handleChange} className="form-input text-sm" placeholder="STF-101" />
                   </InputGroup>
                   <InputGroup icon={<FiClock />} label="Assigned Shift">
-                    <select name="shift" onChange={handleChange} className="form-input bg-[#0f172a]">
+                    <select name="shift" onChange={handleChange} className="form-input bg-[#0f172a] text-sm">
                       <option value="Morning">Morning</option>
                       <option value="Evening">Evening</option>
                       <option value="Night">Night</option>
@@ -107,12 +105,12 @@ const CreateUser = () => {
               )}
 
               {formData.role === 'Doctor' && (
-                <motion.div key="doctor" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-2 gap-6">
+                <motion.div key="doctor" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
                   <InputGroup icon={<FiBriefcase />} label="Specialization">
-                    <input type="text" name="specialization" required onChange={handleChange} className="form-input" placeholder="e.g. Cardiology" />
+                    <input type="text" name="specialization" required onChange={handleChange} className="form-input text-sm" placeholder="e.g. Cardiology" />
                   </InputGroup>
                   <InputGroup icon={<FiPhone />} label="Contact Number">
-                    <input type="text" name="phone" required onChange={handleChange} className="form-input" placeholder="+1 234..." />
+                    <input type="text" name="phone" required onChange={handleChange} className="form-input text-sm" placeholder="+1 234..." />
                   </InputGroup>
                 </motion.div>
               )}
@@ -121,7 +119,7 @@ const CreateUser = () => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-white text-black font-black py-4 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-indigo-500 hover:text-white transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-2"
+              className="w-full bg-white text-black font-black py-4 rounded-xl lg:rounded-2xl uppercase tracking-[0.2em] text-[10px] lg:text-xs hover:bg-indigo-600 hover:text-white transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-2 mt-4"
             >
               {loading ? "Processing..." : "Finalize Registration"}
             </button>
@@ -132,10 +130,9 @@ const CreateUser = () => {
   );
 };
 
-// Helper Component for UI consistency
 const InputGroup = ({ icon, label, children }) => (
   <div className="flex flex-col gap-2">
-    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
+    <label className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2">
       <span className="text-indigo-500">{icon}</span> {label}
     </label>
     {children}

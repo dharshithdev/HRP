@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../Contexts/AuthFile';
 import AdminSidebar from '../../Components/AdminSidebar';
 import axios from 'axios';
-import { FiSearch, FiPhone, FiMail, FiActivity, FiUser, FiTrash2, FiPower, FiCalendar } from 'react-icons/fi';
+import { FiSearch, FiPhone, FiMail, FiActivity, FiUser, FiTrash2, FiPower, FiCalendar, FiArrowLeft } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const DoctorManagement = () => {
@@ -11,6 +11,9 @@ const DoctorManagement = () => {
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  
+  // Mobile UI Helper
+  const [viewMode, setViewMode] = useState('list'); 
 
   const fetchDoctors = async () => {
     try {
@@ -19,7 +22,8 @@ const DoctorManagement = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDoctors(res.data);
-      if (res.data.length > 0) setSelectedDoc(res.data[0]);
+      // Auto-select first only on Desktop/Large screens
+      if (res.data.length > 0 && window.innerWidth > 1024) setSelectedDoc(res.data[0]);
     } catch (err) {
       console.error(err);
     } finally {
@@ -29,13 +33,18 @@ const DoctorManagement = () => {
 
   useEffect(() => { fetchDoctors(); }, []);
 
+  const handleSelectDoc = (doc) => {
+    setSelectedDoc(doc);
+    setViewMode('detail');
+  };
+
   const handleToggleStatus = async (userId) => {
     try {
       const token = localStorage.getItem('token');
       await axios.patch(`${process.env.REACT_APP_API_URL}/api/admin/toggle-status/${userId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchDoctors(); // Refresh list
+      fetchDoctors(); 
     } catch (err) { alert("Status update failed"); }
   };
 
@@ -49,6 +58,7 @@ const DoctorManagement = () => {
       const updated = doctors.filter(d => d._id !== docId);
       setDoctors(updated);
       setSelectedDoc(updated[0] || null);
+      if (window.innerWidth < 1024) setViewMode('list');
     } catch (err) { alert("Deletion failed"); }
   };
 
@@ -58,14 +68,17 @@ const DoctorManagement = () => {
   );
 
   return (
-    <div className="flex h-screen bg-[#060910] text-white overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-screen bg-[#060910] text-white overflow-hidden">
       <AdminSidebar logout={logout} />
 
-      <main className="flex-1 flex overflow-hidden">
-        {/* LEFT SIDE LIST */}
-        <div className="w-1/3 border-r border-white/5 flex flex-col bg-[#080d17]/50">
-          <div className="p-8">
-            <h2 className="text-2xl font-black italic tracking-tighter uppercase mb-6">Doctor Registry</h2>
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        {/* LEFT SIDE LIST (Hidden on mobile if viewing details) */}
+        <div className={`
+          ${viewMode === 'detail' ? 'hidden lg:flex' : 'flex'}
+          w-full lg:w-1/3 border-r border-white/5 flex-col bg-[#080d17]/50 h-full
+        `}>
+          <div className="p-6 lg:p-8">
+            <h2 className="text-xl lg:text-2xl font-black italic tracking-tighter uppercase mb-6">Doctor Registry</h2>
             <div className="relative">
               <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
               <input 
@@ -81,14 +94,14 @@ const DoctorManagement = () => {
             {filteredDocs.map((doc) => (
               <button
                 key={doc._id}
-                onClick={() => setSelectedDoc(doc)}
-                className={`w-full text-left p-5 rounded-[2rem] transition-all border ${
+                onClick={() => handleSelectDoc(doc)}
+                className={`w-full text-left p-4 lg:p-5 rounded-2xl lg:rounded-[2rem] transition-all border ${
                   selectedDoc?._id === doc._id 
                   ? 'bg-indigo-600 border-indigo-400 shadow-xl shadow-indigo-600/20' 
                   : 'bg-white/5 border-transparent hover:bg-white/10'
                 }`}
               >
-                <p className="font-black text-sm uppercase">{doc.name}</p>
+                <p className="font-black text-sm uppercase truncate">{doc.name}</p>
                 <p className={`text-[10px] font-bold mt-1 ${selectedDoc?._id === doc._id ? 'text-indigo-200' : 'text-indigo-500'}`}>
                   {doc.specialization}
                 </p>
@@ -97,22 +110,33 @@ const DoctorManagement = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE DETAILS */}
-        <div className="flex-1 bg-[#080d17] p-12 overflow-y-auto">
+        {/* RIGHT SIDE DETAILS (Hidden on mobile if viewing list) */}
+        <div className={`
+          ${viewMode === 'list' ? 'hidden lg:block' : 'block'}
+          flex-1 bg-[#080d17] p-6 lg:p-12 overflow-y-auto h-full
+        `}>
+          {/* Mobile Back Button */}
+          <button 
+            onClick={() => setViewMode('list')}
+            className="lg:hidden flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-widest mb-6"
+          >
+            <FiArrowLeft /> Back to Registry
+          </button>
+
           <AnimatePresence mode="wait">
             {selectedDoc ? (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={selectedDoc._id}>
-                <div className="flex justify-between items-start mb-12">
-                  <div className="flex items-center gap-6">
+                <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6 mb-10 lg:mb-12 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
                     <div className="w-20 h-20 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl flex items-center justify-center text-3xl text-indigo-500">
                       <FiUser />
                     </div>
                     <div>
-                      <h3 className="text-4xl font-black italic tracking-tighter uppercase">{selectedDoc.name}</h3>
+                      <h3 className="text-2xl lg:text-4xl font-black italic tracking-tighter uppercase leading-tight">{selectedDoc.name}</h3>
                       <p className="text-indigo-400 font-black text-xs uppercase tracking-widest mt-1">{selectedDoc.specialization}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <button onClick={() => handleToggleStatus(selectedDoc.userId?._id)} className={`p-4 rounded-2xl border transition-all ${selectedDoc.userId?.isActive ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'}`}>
                       <FiPower />
                     </button>
@@ -122,21 +146,21 @@ const DoctorManagement = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <DetailBox icon={<FiMail />} label="Email" value={selectedDoc.userId?.email ? selectedDoc.userId?.email : "Mail not Provided"} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                  <DetailBox icon={<FiMail />} label="Email" value={selectedDoc.userId?.email || "Mail not Provided"} />
                   <DetailBox icon={<FiPhone />} label="Contact" value={selectedDoc.phone || "Not Provided"} />
                 </div>
 
                 {/* AVAILABILITY SECTION */}
-                <div className="bg-white/5 border border-white/5 rounded-[2.5rem] p-8">
-                  <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-6">
+                <div className="bg-white/5 border border-white/5 rounded-[2rem] lg:rounded-[2.5rem] p-6 lg:p-8">
+                  <h4 className="flex items-center gap-2 text-[10px] lg:text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-6">
                     <FiCalendar className="text-indigo-500" /> Weekly Schedule
                   </h4>
                   <div className="space-y-4">
                     {selectedDoc.availability?.length > 0 ? selectedDoc.availability.map((sched, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                        <span className="font-bold text-sm">{sched.day}</span>
-                        <div className="flex gap-2">
+                      <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-white/5 last:border-0 gap-3">
+                        <span className="font-bold text-sm text-indigo-100">{sched.day}</span>
+                        <div className="flex flex-wrap gap-2">
                           {sched.slots.map((slot, sIdx) => (
                             <span key={sIdx} className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-mono text-indigo-300">
                               {slot}
@@ -151,8 +175,9 @@ const DoctorManagement = () => {
                 </div>
               </motion.div>
             ) : (
-              <div className="h-full flex items-center justify-center opacity-10">
-                <FiActivity size={100} />
+              <div className="h-full flex flex-col items-center justify-center opacity-10 text-center">
+                <FiActivity size={64} className="mb-4" />
+                <p className="text-xs font-black uppercase tracking-widest">Select a Doctor Profile</p>
               </div>
             )}
           </AnimatePresence>
@@ -163,11 +188,11 @@ const DoctorManagement = () => {
 };
 
 const DetailBox = ({ icon, label, value }) => (
-  <div className="bg-white/5 border border-white/5 p-6 rounded-3xl">
-    <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">
+  <div className="bg-white/5 border border-white/5 p-5 lg:p-6 rounded-[1.5rem] lg:rounded-3xl">
+    <div className="flex items-center gap-2 text-slate-500 text-[9px] lg:text-[10px] font-black uppercase tracking-widest mb-2 truncate">
       {icon} {label}
     </div>
-    <p className="font-bold">{value}</p>
+    <p className="font-bold text-sm lg:text-base break-words">{value}</p>
   </div>
 );
 
